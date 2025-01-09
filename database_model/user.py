@@ -17,3 +17,8 @@ def hash_password(password: str) -> str:
 # To verify a password
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
+async def get_user_by_token(token: str):
+    # Assuming you're using SQLAlchemy
+    user = await session.query(User).filter(User.token == token).first()
+    return user

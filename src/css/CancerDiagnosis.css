@@ -27,6 +27,12 @@
 
 .check-button, .submit-button {
   margin-top: 10px;
+  background-color: teal;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .patient-details {

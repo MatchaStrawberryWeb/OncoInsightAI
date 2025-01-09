@@ -28,3 +28,8 @@ def init_db():
     # Local import to avoid circular import issues
     from .user import User
     Base.metadata.create_all(bind=engine)  # Create all tables, including User
+
+# database_model/database.py
+def get_current_user_token():
+    # Example placeholder function
+    return "mock-token"

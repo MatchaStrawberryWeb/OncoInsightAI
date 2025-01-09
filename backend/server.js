@@ -86,4 +86,8 @@ app.get("/api/data", (req, res) => {
     res.status(200).json({ message: "Login successful" });
   });
 
+  const getUserRouter = require('../components/getUser'); // Adjust path as needed
+app.use(getUserRouter);
+
+
 });

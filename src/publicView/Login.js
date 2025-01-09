@@ -12,12 +12,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!username || !password) {
       setError("Both fields are required.");
       return;
     }
-
+  
     console.log("Logging in with username:", username);
     try {
       const response = await fetch('http://localhost:8000/login', {
@@ -25,11 +25,15 @@ const Login = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await response.json();
       console.log("Login response:", data);
-
+  
       if (response.ok) {
+        // Save username and login status to localStorage
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('username', data.username); // Store the username from the API response
+  
         setMessage("Login successful! Redirecting...");
         setError("");
         setTimeout(() => {
@@ -45,6 +49,7 @@ const Login = () => {
       setMessage("");
     }
   };
+  
 
   return (
     <div className="login-container">

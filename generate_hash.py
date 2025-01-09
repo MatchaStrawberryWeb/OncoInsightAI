@@ -6,6 +6,6 @@ def generate_hashed_password(plaintext_password):
     return hashed_password
 
 # Example usage
-plaintext_password = "doctor02"
+plaintext_password = "nurse03"
 hashed_password = generate_hashed_password(plaintext_password)
 print(f"Generated hash: {hashed_password}")

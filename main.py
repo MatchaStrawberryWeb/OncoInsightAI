@@ -13,6 +13,9 @@ from database_model.database import engine, Base
 from database_model.user import User
 from passlib.context import CryptContext
 from database_model.patient import Patient
+from database_model.database import get_current_user_token
+from database_model.get_user import router as get_user_router
+
 
 
 # Configure logging
@@ -24,6 +27,8 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Create FastAPI app instance
 app = FastAPI()
+
+app.include_router(get_user_router)
 
 # Enable CORS for all origins (update to restrict to your frontend URL)
 app.add_middleware(
