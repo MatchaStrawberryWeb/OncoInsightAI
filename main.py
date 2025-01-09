@@ -10,8 +10,9 @@ from sqlalchemy.orm import Session
 from database_model import init_db, get_db
 import logging
 from database_model.database import engine, Base
-from database_model.user import User, verify_password
+from database_model.user import User
 from passlib.context import CryptContext
+from database_model.patient import Patient
 
 
 # Configure logging
@@ -21,9 +22,6 @@ logger = logging.getLogger(__name__)
 # Create bcrypt context for password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Function to verify passwords
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
 # Create FastAPI app instance
 app = FastAPI()
 
@@ -56,6 +54,21 @@ models = {
     "lung_cancer": joblib.load("models/lung_cancer_model.pkl"),
     "prostate_cancer": joblib.load("models/prostate_cancer_model.pkl")
 }
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+@app.get("/patient/{ic_number}")
+async def get_patient_details(ic_number: str, db: Session = Depends(get_db)):
+    # Use SQLAlchemy ORM query to retrieve patient by IC number
+    patient = db.query(Patient).filter(Patient.ic_number == ic_number).first()
+    
+    # If no patient is found, raise HTTP 404 error
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    
+    # Return the patient details as a dictionary
+    return {"ic_number": patient.ic_number, "full_name": patient.full_name, "age": patient.age, "gender": patient.gender}
+
 
 @app.post("/diagnose")
 async def diagnose(ic_number: str, file: UploadFile = File(...), db: Session = Depends(get_db)):

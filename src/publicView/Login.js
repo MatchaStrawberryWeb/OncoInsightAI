@@ -77,6 +77,13 @@ const Login = () => {
           {message && <p className="success-message">{message}</p>}
           <button type="submit" className="login-btn">Login</button>
         </form>
+
+        <div className="admin-info">
+          <p>
+            Note: User accounts are managed by the admin. If you do not have access, please contact the admin.
+          </p>
+        </div>
+
       </div>
     </div>
   );

@@ -26,11 +26,12 @@ const Dashboard = () => {
   return (
     <div style={{ display: 'flex' }}>
       <Sidebar />
-      <div style={{ marginLeft: '250px', padding: '20px', flex: 1 }}>
-        <h1>Welcome back, {username || 'User'} 👋</h1> {/* Display the username */}
-        <p>Here's the latest update from the last 7 days. Check now.</p>
+      <div style={{ marginLeft: '50px', padding: '10px', flex: 1 }}>
+        {/* Display the username */}
+          <h1 style={{ color: 'teal' }}>Welcome back, {username || 'User'} 👋</h1>
+          <p>Here's the latest update from the last 7 days. Check now.</p>
 
-        {/* Stats and other dashboard content */}
+          {/* Stats and other dashboard content */}
         <div className="stats-container">
           <div className="stat-card">
             <h2>10,525</h2>
