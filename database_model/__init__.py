@@ -1,2 +1,2 @@
-from .database_model import init_db
+from .database import get_db, init_db
 from .user import User
