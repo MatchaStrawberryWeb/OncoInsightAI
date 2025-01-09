@@ -10,11 +10,20 @@ from sqlalchemy.orm import Session
 from database_model import init_db, get_db
 import logging
 from database_model.database import engine, Base
+from database_model.user import User, verify_password
+from passlib.context import CryptContext
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Create bcrypt context for password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Function to verify passwords
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 # Create FastAPI app instance
 app = FastAPI()
 
@@ -81,14 +90,18 @@ async def create_patient(patient: PatientDetails, db: Session = Depends(get_db))
 
 @app.post("/login")
 async def login(login_request: LoginRequest, db: Session = Depends(get_db)):
-    # Implement your authentication logic here
-    user = db.execute(
-        "SELECT * FROM users WHERE username = :username AND password = :password",
-        {"username": login_request.username, "password": login_request.password}
-    ).fetchone()
+    # Fetch the user from the database
+    user = db.query(User).filter(User.username == login_request.username).first()
     if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"message": "Login successful"}
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    
+    # Verify the password
+    if not verify_password(login_request.password, user.password_hash):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    
+    # If login is successful, you can return user details or generate a token
+    return {"message": "Login successful", "username": user.username}
+
 
 @app.exception_handler(FileNotFoundError)
 async def file_not_found_exception_handler(request, exc):
