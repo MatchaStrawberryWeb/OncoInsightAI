@@ -1,0 +1,76 @@
+/* Teal Color Scheme */
+:root {
+    --primary-bg: #f7f9fc;
+    /* Light background */
+    --section-bg: #ffffff;
+    /* White for sections */
+    --primary-text: #333333;
+    /* Dark text */
+    --secondary-text: #555555;
+    /* Lighter text */
+    --button-bg: #008080;
+    /* Teal for buttons */
+    --button-hover-bg: #005757;
+    /* Darker teal for hover */
+    --feature-bg: #e6f2f2;
+    /* Light teal background for features */
+    --footer-bg: #333333;
+    /* Footer background */
+    --footer-text: #ffffff;
+    /* Footer text color */
+  }
+  
+  .homepage {
+    background: var(--primary-bg);
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+
+  /* Navbar Styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #008080;
+    color: white;
+    padding: 10px 20px;
+  }
+  
+  .navbar .logo {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-links li {
+    position: relative;
+  }
+  
+  .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 8px 12px;
+    transition: background-color 0.3s;
+    display: flex;
+    /* For proper alignment */
+    align-items: center;
+    gap: 8px;
+    /* Space between icon and text */
+  }
+  
+  .nav-links a:hover {
+    background-color: #005757;
+    /* Darker teal */
+    border-radius: 4px;
+  }
+  
+  .nav-links a .fa-icon {
+    font-size: 1.2rem;
+    /* Adjust icon size */
+  }

@@ -1,0 +1,10 @@
+.homepage-footer {
+    text-align: center;
+    background: #008080; /* Teal color */
+    color: white;
+    padding: 10px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+  }
+  

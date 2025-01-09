@@ -1,0 +1,72 @@
+.about-us-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px;
+    text-align: left;
+    gap: 20px;
+  }
+  
+  .content {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .content h1 {
+    font-size: 2.5rem;
+    color: var(--button-bg); /* Teal color */
+    margin-bottom: 20px;
+  }
+  
+  .content p {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+    color: var(--secondary-text);
+  }
+
+  .content h2 {
+    color: #008080;
+  }
+  
+  .divider {
+    margin: 20px 0;
+    width: 80%;
+    height: 2px;
+    background-color: var(--button-bg); /* Teal color for the divider */
+  }
+  
+  .highlight-section,
+  .team-section {
+    margin-bottom: 30px;
+  }
+  
+  .svg-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .about-svg {
+    max-width: 80%; /* Adjust as needed */
+    height: auto;
+    margin-left: auto;
+  }
+  
+
+  @media (max-width: 768px) {
+    .about-us-container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .svg-container {
+      margin-top: 20px;
+    }
+  
+    .about-svg {
+      max-width: 100%; /* Full width on smaller screens */
+    }
+  }
+  

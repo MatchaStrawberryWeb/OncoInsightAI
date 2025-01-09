@@ -1,0 +1,112 @@
+/* Teal Color Scheme */
+:root {
+  --primary-bg: #f7f9fc;
+  /* Light background */
+  --section-bg: #ffffff;
+  /* White for sections */
+  --primary-text: #333333;
+  /* Dark text */
+  --secondary-text: #555555;
+  /* Lighter text */
+  --button-bg: #008080;
+  /* Teal for buttons */
+  --button-hover-bg: #005757;
+  /* Darker teal for hover */
+  --feature-bg: #e6f2f2;
+  /* Light teal background for features */
+  --footer-bg: #333333;
+  /* Footer background */
+  --footer-text: #ffffff;
+  /* Footer text color */
+  --font-family: 'Roboto', sans-serif;
+}
+
+body {
+  font-family: var(--font-family);
+}
+
+/* Hero Section Styles */
+.hero-section {
+  background-image: url('../assets/2.jpg');
+  /* Use your image here */
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  color: white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #005757;
+}
+
+.hero-section p {
+  font-size: 1.25rem;
+  color: #555555;
+}
+
+/* Features Section Styles */
+.features-section {
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.features-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #005757;
+}
+
+.features {
+  display: flex;
+  justify-content: space-between; /* Add space between features */
+  gap: 20px; /* Add spacing between feature boxes */
+  flex-wrap: nowrap; /* Prevent wrapping */
+}
+
+.feature {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 30%; /* Ensure all features have equal width */
+  text-align: center;
+}
+
+.feature h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #008080;
+}
+
+.feature p {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Image Styles */
+.feature-image {
+  width: 100%; 
+  max-width: 300px; 
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px; 
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .features {
+    flex-direction: column; /* Stack the features on smaller screens */
+    align-items: center;
+  }
+
+  .feature {
+    width: 80%; /* Make features take up more width on smaller screens */
+  }
+}

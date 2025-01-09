@@ -1,0 +1,179 @@
+/* Global Variables */
+:root {
+  --primary-bg: #f9fbfd; /* Light background */
+  --section-bg: #ffffff; /* White for sections */
+  --primary-text: #333333; /* Dark text */
+  --secondary-text: #555555; /* Lighter text */
+  --button-bg: #00796b; /* Teal for buttons */
+  --button-hover-bg: #004d40; /* Darker teal for hover */
+  --feature-bg: #e0f2f1; /* Light teal background for features */
+  --footer-bg: #004d40; /* Footer background */
+  --footer-text: #ffffff; /* Footer text color */
+  --card-shadow: rgba(0, 0, 0, 0.1); /* Shadow for cards */
+  --font-family: 'Roboto', sans-serif;
+}
+
+/* General Styles */
+body {
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  line-height: 1.6;
+}
+
+h2, h3 {
+  margin: 20px 0;
+  font-weight: 600;
+}
+
+p {
+  margin: 10px 0;
+}
+
+/* Services Container */
+.services-container {
+  padding: 50px 20px;
+  background-color: var(--primary-bg);
+  text-align: left;
+  display: flex;
+  justify-content: flex-start; /* Align content from the left */
+  align-items: flex-start;
+  flex-wrap: wrap; /* Allow content to wrap on smaller screens */
+}
+
+/* Introduction Section */
+.services-intro {
+  max-width: 60%; /* Limit the text width to leave space for SVG */
+  padding: 20px;
+}
+
+.intro-heading {
+  font-size: 2.5rem;
+  color: #008080;
+}
+
+.intro-text {
+  font-size: 1.2rem;
+  color: var(--secondary-text);
+}
+
+/* Positioning the SVG on the right side */
+.services-svg {
+  width: 500px; /* Increased size of the SVG */
+  height: auto;
+  pointer-events: none;
+  margin-left: 20px; /* Space between the SVG and text */
+  position: absolute;
+  right: 20px;
+  top: 200px; /* Adjusted to move the SVG down slightly */
+}
+
+
+/* Features Section */
+.features-section {
+  margin: 40px auto; /* Add auto margin for horizontal centering */
+  text-align: center; /* Center the content inside */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the content */
+  width: 100%; /* Ensure the section takes up the full width */
+  max-width: 1200px; /* Optional: Limit the maximum width of the section */
+}
+
+.features-heading {
+  font-size: 2.5rem;
+  color: #005757;
+  margin-bottom: 20px;
+}
+
+.feature-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center; /* Center the feature cards */
+  width: 100%;
+  max-width: 900px; /* Limit the max width of the feature cards */
+  margin: 0 auto; /* Ensure the cards are centered */
+}
+
+.feature-card {
+  background-color: var(--section-bg);
+  box-shadow: 0 4px 8px var(--card-shadow);
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 40px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--feature-bg);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px var(--card-shadow);
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #008080;
+}
+
+.feature-card p {
+  font-size: 1rem;
+  color: var(--secondary-text);
+}
+
+/* Insights Section */
+.insights-section {
+  margin: 40px 0;
+  padding: 20px;
+  background-color: var(--feature-bg);
+  text-align: left;
+  border-radius: 10px;
+}
+
+.insights-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #005757;
+}
+
+.insights-list {
+  list-style: none;
+  padding: 0;
+}
+
+.insights-list li strong {
+  color: #008080;
+}
+
+.insights-list li {
+  font-size: 1.1rem;
+  color: var(--primary-text);
+  margin-bottom: 15px;
+  line-height: 1.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .services-container {
+    flex-direction: column; /* Stack content vertically on small screens */
+    align-items: center; /* Center content */
+    padding: 20px;
+  }
+
+  .services-svg {
+    width: 250px; /* Adjust size for smaller screens */
+    margin-top: 20px;
+    opacity: 0.2; /* Optional for subtle background effect */
+    position: relative;
+  }
+
+  .services-intro {
+    max-width: 100%; /* Full width for smaller screens */
+  }
+}

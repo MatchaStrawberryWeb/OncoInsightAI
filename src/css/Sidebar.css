@@ -1,0 +1,63 @@
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #008080;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.logo-dashboard {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin: 15px 0;
+}
+
+.sidebar li a,
+.menu-heading {
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.sidebar li a:hover,
+.menu-heading:hover {
+  color: #005757;
+}
+
+.menu-icon {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.submenu {
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.submenu li {
+  margin: 10px 0;
+}
+
+.submenu li a {
+  font-size: 16px;
+  text-decoration: none;
+  color: white;
+}
+
+.submenu li a:hover {
+  color: #005757;
+}
