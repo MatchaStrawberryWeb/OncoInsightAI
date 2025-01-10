@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 # Define database URL (update with correct credentials if needed)
 SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root@localhost/oncoinsight"
 
+
 # Create the engine
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 

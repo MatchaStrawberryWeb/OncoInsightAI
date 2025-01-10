@@ -1,0 +1,56 @@
+.upload-scan-results {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    font-family: Roboto, sans-serif;
+  }
+  
+  .upload-scan-results h2 {
+    text-align: center;
+    color: #008080;
+  }
+  
+  .upload-scan-results form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .upload-scan-results input,
+  .upload-scan-results select,
+  .upload-scan-results button {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .upload-scan-results button {
+    background-color: #008080;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .upload-scan-results button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+  
+  .upload-scan-results button:hover:not(:disabled) {
+    background-color: #005959;
+  }
+  
+  .success-message {
+    color: green;
+    text-align: center;
+  }
+  
+  .error-message {
+    color: red;
+    text-align: center;
+  }
+  

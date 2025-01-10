@@ -10,6 +10,7 @@ import Login from './publicView/Login';
 import Dashboard from './components/Dashboard'; // Dashboard component
 import CancerDiagnosis from './components/CancerDiagnosis';
 import Protected from './components/Protected'; // Ensure the correct path for Protected component
+import UploadScanResults from './components/patientData/UploadScanResults'; // Updated path
 
 const App = () => {
   return (
@@ -29,8 +30,10 @@ const App = () => {
             <Protected component={Dashboard} /> // Protect the route with the Protected component
           }
         />
-
+        {/* Routes for Patient Data */}
         <Route path="/cancer-diagnosis" element={<CancerDiagnosis />} />
+
+        <Route path="/patient-data/upload-scan-results" element={<UploadScanResults />} />
       </Routes>
     </Router>
   );

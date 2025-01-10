@@ -15,6 +15,7 @@ from passlib.context import CryptContext
 from database_model.patient import Patient
 from database_model.database import get_current_user_token
 from database_model.get_user import router as get_user_router
+from backend.routes.registerPatient import router
 
 
 
