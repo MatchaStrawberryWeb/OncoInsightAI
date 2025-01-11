@@ -1,56 +1,102 @@
 .upload-scan-results {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    font-family: Roboto, sans-serif;
-  }
-  
-  .upload-scan-results h2 {
-    text-align: center;
-    color: #008080;
-  }
-  
-  .upload-scan-results form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .upload-scan-results input,
-  .upload-scan-results select,
-  .upload-scan-results button {
-    margin-bottom: 10px;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  .upload-scan-results button {
-    background-color: #008080;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .upload-scan-results button:disabled {
-    background-color: #aaa;
-    cursor: not-allowed;
-  }
-  
-  .upload-scan-results button:hover:not(:disabled) {
-    background-color: #005959;
-  }
-  
-  .success-message {
-    color: green;
-    text-align: center;
-  }
-  
-  .error-message {
-    color: red;
-    text-align: center;
-  }
-  
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  font-family: Roboto, sans-serif;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.upload-scan-results h2 {
+  text-align: center;
+  color: #008080;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.upload-scan-results form {
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-scan-results div {
+  margin-bottom: 20px;
+}
+
+.upload-scan-results label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.upload-scan-results input,
+.upload-scan-results select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.upload-scan-results input:focus,
+.upload-scan-results select:focus {
+  border-color: #008080;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 128, 128, 0.3);
+}
+
+.upload-scan-results button {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  background-color: #008080;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-scan-results button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+.upload-scan-results button:hover:not(:disabled) {
+  background-color: #005959;
+}
+
+.success-message {
+  color: green;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.submitted-details {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+.submitted-details h3 {
+  margin-bottom: 10px;
+}
+
+.submitted-details p {
+  margin: 5px 0;
+}

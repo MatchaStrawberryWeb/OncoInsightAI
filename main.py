@@ -16,8 +16,8 @@ from database_model.patient import Patient
 from database_model.database import get_current_user_token
 from database_model.get_user import router as get_user_router
 from backend.routes.registerPatient import router
-
-
+from fastapi import FastAPI, Form
+import shutil
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -28,6 +28,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Create FastAPI app instance
 app = FastAPI()
+
+UPLOAD_DIRECTORY = "./uploads"  # Directory to store uploaded files
+os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 app.include_router(get_user_router)
 
@@ -99,27 +102,33 @@ async def diagnose(ic_number: str, file: UploadFile = File(...), db: Session = D
     return JSONResponse(content={"patient": patient, "results": results})
 
 @app.post("/patient")
-async def create_patient(patient: PatientDetails, db: Session = Depends(get_db)):
-    db.execute(
-        "INSERT INTO patient (ic_number, full_name, age, gender) VALUES (:ic_number, :full_name, :age, :gender)",
-        {"ic_number": patient.ic_number, "full_name": patient.full_name, "age": patient.age, "gender": patient.gender}
-    )
-    db.commit()
-    return {"message": "Patient created successfully"}
+async def create_patient(
+    ic_number: str,
+    full_name: str,
+    age: int,
+    gender: str,
+    file: UploadFile = File(...),  # Handle file upload
+    db: Session = Depends(get_db),
+):
+    # Save the file
+    file_location = f"uploads/{file.filename}"
+    with open(file_location, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
 
-@app.post("/login")
-async def login(login_request: LoginRequest, db: Session = Depends(get_db)):
-    # Fetch the user from the database
-    user = db.query(User).filter(User.username == login_request.username).first()
-    if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-    
-    # Verify the password
-    if not verify_password(login_request.password, user.password_hash):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-    
-    # If login is successful, you can return user details or generate a token
-    return {"message": "Login successful", "username": user.username}
+    # Create a new patient record
+    new_patient = Patient(
+        ic_number=ic_number,
+        full_name=full_name,
+        age=age,
+        gender=gender,
+        file=file_location,  # Store the file path in the `file` column
+    )
+
+    db.add(new_patient)
+    db.commit()
+    db.refresh(new_patient)
+
+    return {"message": "Patient added successfully", "patient": new_patient}
 
 
 @app.exception_handler(FileNotFoundError)

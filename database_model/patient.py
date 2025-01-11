@@ -1,10 +1,13 @@
-from sqlalchemy import Column, String, Integer
-from database_model import Base  # Ensure Base is imported from the right module
+from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 class Patient(Base):
-    __tablename__ = 'patient'  # Table name in the database
+    __tablename__ = "patient"
 
-    ic_number = Column(String, primary_key=True, index=True)  # Primary key
-    full_name = Column(String, index=True)  # Full name of the patient
-    age = Column(Integer)  # Age of the patient
-    gender = Column(String)  # Gender of the patient
+    ic_number = Column(String(12), primary_key=True, index=True)
+    full_name = Column(String(255))
+    age = Column(Integer)
+    gender = Column(Enum('Male', 'Female'))
+    file = Column(String(255))  # This column stores the file path or filename
