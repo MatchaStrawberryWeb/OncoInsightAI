@@ -52,7 +52,7 @@ const Sidebar = () => {
                         {!collapsed && !patientDataCollapsed && (
                             <ul className="submenu">
                                 <li><Link to="/patient-data/upload-scan-results">Upload Scan Results</Link></li>
-                                <li><Link to="/patient-data/update-records">Update Patient Records</Link></li>
+                                <li><Link to="/patient-data/update-patient-records">Update Patient Records</Link></li>
                                 <li><Link to="/patient-data/view-history">View Patient History</Link></li>
                             </ul>
                         )}

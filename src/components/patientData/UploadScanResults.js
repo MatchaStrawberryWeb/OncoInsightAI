@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import '../../css/UploadScanResults.css'
+import Sidebar from "../Sidebar";
 
 const UploadScanResults = () => {
   // State for form inputs
@@ -52,6 +53,8 @@ const UploadScanResults = () => {
   };
 
   return (
+    <div className="upload-scan-page">
+      <Sidebar />
     <div className="upload-scan-results">
       <h2>Upload Scan Results</h2>
       <form onSubmit={handleSubmit}>
@@ -117,6 +120,7 @@ const UploadScanResults = () => {
           <p>File Uploaded: {submittedDetails.file_name}</p>
         </div>
       )}
+    </div>
     </div>
   );
 };

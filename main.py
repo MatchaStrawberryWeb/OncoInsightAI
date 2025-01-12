@@ -126,6 +126,35 @@ async def register_patient(
         },
     }
 
+@app.get("/api/patients")
+async def get_all_patients(db: Session = Depends(get_db)):
+    patients = db.query(Patient).all()
+    return patients
+
+# Endpoint to update the patient's medical report (file)
+@app.put("/update-patient-records/{ic_number}")
+async def update_patient_records(
+    ic_number: str,
+    file: UploadFile = File(None),  # Optional file upload
+    medical_record: str = Form(...),  # Updated medical record
+    db: Session = Depends(get_db)
+):
+    patient = db.query(Patient).filter(Patient.ic_number == ic_number).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+
+    if file:
+        file_path = f"uploaded_files/{file.filename}"  # Adjust as necessary
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
+        patient.file = file_path  # Save file path to the database
+
+    patient.medical_record = medical_record  # Update medical record
+    db.commit()
+    return {"message": "Patient record updated successfully"}
+
+
+
 @app.exception_handler(FileNotFoundError)
 async def file_not_found_exception_handler(request, exc):
     logger.error(f"FileNotFoundError: {exc}")

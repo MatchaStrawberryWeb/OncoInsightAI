@@ -11,6 +11,7 @@ import Dashboard from './components/Dashboard'; // Dashboard component
 import CancerDiagnosis from './components/CancerDiagnosis';
 import Protected from './components/Protected'; // Ensure the correct path for Protected component
 import UploadScanResults from './components/patientData/UploadScanResults'; // Updated path
+import UpdatePatientRecords from './components/patientData/UpdatePatientRecords';
 
 const App = () => {
   return (
@@ -32,8 +33,8 @@ const App = () => {
         />
         {/* Routes for Patient Data */}
         <Route path="/cancer-diagnosis" element={<CancerDiagnosis />} />
-
         <Route path="/patient-data/upload-scan-results" element={<UploadScanResults />} />
+        <Route path="/patient-data/update-patient-records" element={<UpdatePatientRecords />} />
       </Routes>
     </Router>
   );
