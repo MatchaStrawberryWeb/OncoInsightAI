@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from database_model import get_db
-from database_model.patient import Patient
+# from database_model.patient import Patient  # Comment out for mock-up if no DB interaction
 
 router = APIRouter()
 
@@ -19,21 +19,8 @@ class PatientResponse(BaseModel):
     patient_id: str
 
 @router.post("/register-patient", response_model=PatientResponse)
-def register_patient(patient: PatientCreate, db: Session = Depends(get_db)):
-    # Check if the patient already exists
-    db_patient = db.query(Patient).filter(Patient.ic_number == patient.ic_number).first()
-    if db_patient:
-        raise HTTPException(status_code=400, detail="Patient already exists")
+def register_patient(patient: PatientCreate):
+    # Mock the patient registration logic (without database interaction)
+    mock_patient_id = patient.ic_number  # Just return the IC number as the mock patient ID
     
-    # Add new patient to the database
-    new_patient = Patient(
-        ic_number=patient.ic_number,
-        full_name=patient.full_name,
-        age=patient.age,
-        gender=patient.gender
-    )
-    db.add(new_patient)
-    db.commit()
-    db.refresh(new_patient)
-
-    return {"message": "Patient registered successfully", "patient_id": new_patient.ic_number}
+    return {"message": "Patient data received (mock-up)", "patient_id": mock_patient_id}
