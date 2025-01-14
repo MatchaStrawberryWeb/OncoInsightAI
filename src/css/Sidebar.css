@@ -50,9 +50,6 @@
   transition: color 0.3s ease-in-out;
 }
 
-.menu li a:hover {
-  color: #005757;
-}
 
 /* Menu icon styles */
 .menu-icon {

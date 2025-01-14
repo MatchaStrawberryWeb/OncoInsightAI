@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import '../../css/UploadScanResults.css'
+import '../../css/PatientRecords.css'
 import Sidebar from "../Sidebar";
 
-const UploadScanResults = () => {
+const PatientRecords = () => {
   // State for form inputs
   const [icNumber, setIcNumber] = useState("");
   const [fullName, setFullName] = useState("");
@@ -15,6 +15,8 @@ const UploadScanResults = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [submittedDetails, setSubmittedDetails] = useState(null);
 
+
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -56,7 +58,7 @@ const UploadScanResults = () => {
     <div className="upload-scan-page">
       <Sidebar />
     <div className="upload-scan-results">
-      <h2>Upload Scan Results</h2>
+      <h2>Patient Records</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>IC Number:</label>
@@ -125,4 +127,4 @@ const UploadScanResults = () => {
   );
 };
 
-export default UploadScanResults;
+export default PatientRecords;

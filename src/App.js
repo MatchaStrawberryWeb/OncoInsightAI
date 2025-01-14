@@ -10,9 +10,9 @@ import Login from './publicView/Login';
 import Dashboard from './components/Dashboard'; // Dashboard component
 import CancerDiagnosis from './components/CancerDiagnosis';
 import Protected from './components/Protected'; // Ensure the correct path for Protected component
-import UploadScanResults from './components/patientData/UploadScanResults'; // Updated path
-import UpdatePatientRecords from './components/patientData/UpdatePatientRecords';
-
+import PatientRecords from './components/patientData/PatientRecords'; // Updated path
+import MedicalRecords from './components/patientData/MedicalRecords';
+import Report from './components/Report';
 const App = () => {
   return (
     <Router>
@@ -33,8 +33,9 @@ const App = () => {
         />
         {/* Routes for Patient Data */}
         <Route path="/cancer-diagnosis" element={<CancerDiagnosis />} />
-        <Route path="/patient-data/upload-scan-results" element={<UploadScanResults />} />
-        <Route path="/patient-data/update-patient-records" element={<UpdatePatientRecords />} />
+        <Route path="/patient-data/patient-records" element={<PatientRecords />} />
+        <Route path="/patient-data/medical-records" element={<MedicalRecords />} />
+        <Route path="/report" element={<Report />} />
       </Routes>
     </Router>
   );

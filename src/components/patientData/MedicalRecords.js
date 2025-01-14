@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../../css/UpdatePatientRecords.css';
+import '../../css/MedicalRecords.css';
 import Sidebar from '../Sidebar'; // Import Sidebar component
 
-const UpdatePatientRecords = () => {
+const MedicalRecords = () => {
   const [patients, setPatients] = useState([]); // Store the list of patients
+  const [filteredPatients, setFilteredPatients] = useState([]); // Store filtered patients for search
+  const [searchQuery, setSearchQuery] = useState(''); // Store the search query
   const [icNumber, setIcNumber] = useState(''); // Store the IC number of the selected patient
   const [updatedRecord, setUpdatedRecord] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -18,6 +20,7 @@ const UpdatePatientRecords = () => {
       if (response.ok) {
         const data = await response.json();
         setPatients(data); // Store the list of patients in the state
+        setFilteredPatients(data); // Initialize filtered patients with all patients
       } else {
         setErrorMessage("Failed to load patients.");
       }
@@ -30,6 +33,16 @@ const UpdatePatientRecords = () => {
   useEffect(() => {
     fetchPatients();
   }, []); // Fetch patients when component mounts
+
+  // Filter patients based on search query
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase();
+    const filtered = patients.filter(patient =>
+      patient.ic_number.toLowerCase().includes(lowercasedQuery) ||
+      patient.full_name.toLowerCase().includes(lowercasedQuery)
+    );
+    setFilteredPatients(filtered);
+  }, [searchQuery, patients]);
 
   // Handle the update of the patient record
   const handleUpdate = async () => {
@@ -45,7 +58,7 @@ const UpdatePatientRecords = () => {
 
       // Update the patient record using the PUT request
       await axios.put(
-        `http://127.0.0.1:8000/update-patient-records/${icNumber}`,
+        `http://127.0.0.1:8000/medical-records/${icNumber}`,
         formData,
         {
           headers: {
@@ -61,6 +74,7 @@ const UpdatePatientRecords = () => {
           : patient
       );
       setPatients(updatedPatients); // Update the patients state with the new data
+      setFilteredPatients(updatedPatients); // Update the filtered list
 
       setSuccessMessage("Patient record updated successfully!");
       setErrorMessage("");
@@ -77,7 +91,16 @@ const UpdatePatientRecords = () => {
 
       {/* Main Content */}
       <div className="main-content">
-        <h2>Update Patient Records</h2>
+        <h2>Patient Medical Records</h2>
+
+        {/* Search Bar */}
+        <input
+          type="text"
+          placeholder="Search by IC Number or Full Name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="search-bar"
+        />
 
         {/* Table of Patients */}
         <h3>Registered Patients</h3>
@@ -94,7 +117,7 @@ const UpdatePatientRecords = () => {
             </tr>
           </thead>
           <tbody>
-            {patients.map((patient) => (
+            {filteredPatients.map((patient) => (
               <tr key={patient.ic_number}>
                 <td>{patient.ic_number}</td>
                 <td>{patient.full_name}</td>
@@ -124,7 +147,7 @@ const UpdatePatientRecords = () => {
         {icNumber && (
           <>
             <h3>Update Record for IC Number: {icNumber}</h3>
-            
+
             <textarea
               placeholder="Update patient's medical records..."
               value={updatedRecord}
@@ -148,4 +171,4 @@ const UpdatePatientRecords = () => {
   );
 };
 
-export default UpdatePatientRecords;
+export default MedicalRecords;
