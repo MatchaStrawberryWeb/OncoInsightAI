@@ -4,7 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from database_model import init_db, get_db
-from database_model.user import User
+from database_model.activity_log import UserActivityLog
+from database_model.user import User, hash_password
 from database_model.patient import Patient
 from passlib.context import CryptContext
 from utils.predictor import preprocess_image, predict_with_models 
@@ -13,6 +14,10 @@ import joblib
 import shutil
 import os
 import logging
+from backend import crud
+from werkzeug.security import generate_password_hash
+from database_model.activity_log import UserActivityLog
+
 
 
 # Configure logging
@@ -58,11 +63,16 @@ class PatientDetails(BaseModel):
     age: int
     gender: str
 
+class UserCreate(BaseModel):
+    username: str
+    password: str
 
 # Helper functions
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
 
 # Routes
 @app.post("/login")
@@ -73,6 +83,70 @@ async def login(login_request: LoginRequest, db: Session = Depends(get_db)):
     if not verify_password(login_request.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     return {"message": "Login successful", "username": user.username}
+
+@app.post("/admin/users")
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    """
+    Create a new user.
+    """
+    # Check if the username already exists
+    existing_user = db.query(User).filter(User.username == user.username).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already exists")
+
+    # Create the new user
+    hashed_password = hash_password(user.password)  # Ensure password is hashed
+    new_user = User(username=user.username, password_hash=hashed_password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {"id": new_user.id, "username": new_user.username}
+
+# Route to read users (for the admin dashboard)
+@app.get("/admin/users")
+def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    users = crud.get_users(db, skip=skip, limit=limit)
+    return users
+
+@app.put("/admin/users/{user_id}")
+def update_user(user_id: int, user: UserCreate, db: Session = Depends(get_db)):
+    """
+    Update an existing user's information.
+    """
+    existing_user = db.query(User).filter(User.id == user_id).first()
+    if not existing_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Update username and password if provided
+    if user.username:
+        existing_user.username = user.username
+    if user.password:
+        existing_user.password_hash = hash_password(user.password)  # Re-hash password
+
+    db.commit()
+    db.refresh(existing_user)
+
+    return {"id": existing_user.id, "username": existing_user.username}
+
+# Route to delete a user
+@app.delete("/admin/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a user by ID.
+    """
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    db.delete(user)
+    db.commit()
+    return {"message": "User deleted successfully"}
+
+# Route to get activity logs
+@app.get("/admin/activity_logs")
+def get_activity_logs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    logs = db.query(UserActivityLog).offset(skip).limit(limit).all()
+    return logs
 
 
 @app.get("/patient/{ic_number}")

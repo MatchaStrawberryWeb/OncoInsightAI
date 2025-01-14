@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navigate, Routes, Route } from 'react-router-dom'; // Import Navigate
 import Sidebar from './Sidebar'; // Sidebar with menu options
 import CancerDiagnosis from './CancerDiagnosis'; // Cancer Prediction page
-import PatientRecord from './PatientRecord'; // Patient Record page
+import PatientRecords from './patientData/PatientRecords'; 
 import DetailedReport from './DetailedReport'; // Detailed Report page
 import Profile from './Profile'; // Profile page
 import '../css/Dashboard.css';
@@ -51,7 +51,7 @@ const Dashboard = () => {
 
         <Routes>
           <Route path="cancer-diagnosis" element={<CancerDiagnosis />} />
-          <Route path="patient-record" element={<PatientRecord />} />
+          <Route path="patient-records" element={<PatientRecords />} />
           <Route path="detailed-report" element={<DetailedReport />} />
           <Route path="profile" element={<Profile />} />
         </Routes>

@@ -10,7 +10,8 @@ import {
     FaQuestionCircle, 
     FaBars, 
     FaCaretDown, 
-    FaCaretUp 
+    FaCaretUp,
+    FaSignOutAlt
 } from 'react-icons/fa';
 
 const Sidebar = () => {
@@ -24,6 +25,14 @@ const Sidebar = () => {
     const togglePatientData = () => {
         setPatientDataCollapsed(!patientDataCollapsed); // Toggle collapse state of the Patient Data submenu
     };
+
+    const handleLogout = () => {
+        // Clear user data (e.g., token)
+        localStorage.removeItem("authToken"); // Example: Clear token from localStorage
+        alert("You have been logged out.");
+        window.location.href = "/login"; // Redirect to login page
+    };
+    
 
     return (
         <>
@@ -81,7 +90,7 @@ const Sidebar = () => {
                 </ul>
             </div>
 
-            {/* Top-Right Links */}
+           {/* Top-Right Links */}
             <div className="top-right-links">
                 <Link to="/profile">
                     <FaUser className="menu-icon" /> Profile
@@ -89,7 +98,13 @@ const Sidebar = () => {
                 <Link to="/help">
                     <FaQuestionCircle className="menu-icon" /> Help
                 </Link>
+                <button onClick={handleLogout} className="logout-button">
+                    <FaSignOutAlt className="menu-icon" /> Logout
+                </button>
             </div>
+
+
+
         </>
     );
 };
