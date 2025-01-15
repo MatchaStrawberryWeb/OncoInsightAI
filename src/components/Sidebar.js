@@ -14,6 +14,7 @@ import {
     FaSignOutAlt
 } from 'react-icons/fa';
 
+
 const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(true); // Sidebar starts collapsed
     const [patientDataCollapsed, setPatientDataCollapsed] = useState(true); // Patient Data submenu starts collapsed

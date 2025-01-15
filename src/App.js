@@ -15,6 +15,7 @@ import PatientRecords from './components/patientData/PatientRecords'; // Updated
 import MedicalRecords from './components/patientData/MedicalRecords';
 import Report from './components/Report';
 import AdminActivityLogs from './components/AdminActivityLogs';
+import Profile from './components/Profile'; 
 
 const App = () => {
   return (
@@ -40,6 +41,8 @@ const App = () => {
           path="/dashboard"
           element={<Protected component={Dashboard} requireAdmin={false} />}
         />
+
+        <Route path="/profile" element={<Profile />} />
 
         {/* Routes for Patient Data */}
         <Route path="/cancer-diagnosis" element={<CancerDiagnosis />} />

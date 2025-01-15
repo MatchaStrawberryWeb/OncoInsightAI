@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Request
 from pydantic import BaseModel
 import mysql.connector
 import bcrypt
@@ -9,6 +9,12 @@ app = FastAPI()
 class LoginRequest(BaseModel):
     username: str
     password: str
+
+# User profile model
+class UserProfile(BaseModel):
+    fullName: str
+    username: str
+    department: str
 
 @app.post("/login")
 async def login(request: LoginRequest):
@@ -34,6 +40,29 @@ async def login(request: LoginRequest):
             return {"message": "Login successful!"}
         else:
             raise HTTPException(status_code=401, detail="Invalid password")
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    conn.close()
+
+@app.get("/profile", response_model=UserProfile)
+async def get_profile(username: str):
+    # Connect to MySQL database
+    conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        database='oncoinsight'
+    )
+    cursor = conn.cursor()
+
+    # Retrieve user profile information from the database
+    cursor.execute("SELECT full_name, department FROM users WHERE username = %s", (username,))
+    result = cursor.fetchone()
+
+    if result:
+        full_name, department = result
+        return UserProfile(fullName=full_name, username=username, department=department)
     else:
         raise HTTPException(status_code=404, detail="User not found")
 

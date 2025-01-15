@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Form
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from database_model import init_db, get_db
@@ -17,8 +18,16 @@ import logging
 from backend import crud
 from werkzeug.security import generate_password_hash
 from database_model.activity_log import UserActivityLog
+from dotenv import load_dotenv
 
+# OAuth2PasswordBearer is used to get the token from the Authorization header
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
+# Load environment variables from the .env file
+load_dotenv()
+
+# Get the secret key from the environment variable
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -29,6 +38,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Create FastAPI app instance
 app = FastAPI()
+
 
 UPLOAD_DIRECTORY = "./uploads"
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
@@ -101,6 +111,10 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return {"id": new_user.id, "username": new_user.username}
+
+@app.get("/api/profile")
+def get_profile():
+    return {"message": "Profile API"}
 
 # Route to read users (for the admin dashboard)
 @app.get("/admin/users")

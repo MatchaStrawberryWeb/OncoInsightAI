@@ -30,25 +30,22 @@ const Login = () => {
       console.log("Login response:", data);
   
       if (response.ok) {
-        // Save username and login status to localStorage
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('username', data.username); // Store the username from the API response
+        // Save the token to localStorage
+        localStorage.setItem('token', data.access_token);
         
         // Check if the logged-in user is an admin
         if (username === "admin") {
-          // Redirect to Admin Dashboard if admin
           setMessage("Admin login successful! Redirecting...");
           setTimeout(() => {
-            navigate("/admin-dashboard"); // Admin dashboard route
+            navigate("/admin-dashboard");
           }, 1500);
         } else {
-          // Redirect to User Dashboard if not admin
           setMessage("Login successful! Redirecting...");
           setTimeout(() => {
-            navigate("/dashboard"); // User dashboard route
+            navigate("/dashboard");
           }, 1500);
         }
-        
+  
         setError("");
       } else {
         setError(data.detail || "Invalid credentials. Please contact the admin.");
@@ -60,7 +57,7 @@ const Login = () => {
       setMessage("");
     }
   };
-  
+    
 
   return (
     <div className="login-container">
