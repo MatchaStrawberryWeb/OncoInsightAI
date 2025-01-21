@@ -2,27 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { Navigate, Routes, Route } from 'react-router-dom'; // Import Navigate
 import Sidebar from './Sidebar'; // Sidebar with menu options
 import CancerDiagnosis from './CancerDiagnosis'; // Cancer Prediction page
-import PatientRecords from './patientData/PatientRecords'; 
+import PatientRecords from './patientData/PatientRecords';
 import DetailedReport from './DetailedReport'; // Detailed Report page
 import Profile from './Profile'; // Profile page
 import '../css/Dashboard.css';
 
 const Dashboard = () => {
   const [username, setUsername] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // Default is logged in; adjust if needed
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    if (!isLoggedIn) {
-      // Redirect to login if the user is not logged in
-      return <Navigate to="/login" />;
-    }
-  
+    const loginStatus = localStorage.getItem('isLoggedIn') === 'true';
+    setIsLoggedIn(loginStatus);
+
     const storedUsername = localStorage.getItem('username');
     if (storedUsername) {
       setUsername(storedUsername);
     }
   }, []);
-  
+
+  // Redirect to login page if user is not logged in
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <div style={{ display: 'flex' }}>
@@ -49,11 +51,13 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Routes for Dashboard */}
         <Routes>
           <Route path="cancer-diagnosis" element={<CancerDiagnosis />} />
           <Route path="patient-records" element={<PatientRecords />} />
           <Route path="detailed-report" element={<DetailedReport />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="*" element={<p>Select an option from the sidebar.</p>} /> {/* Default route */}
         </Routes>
       </div>
     </div>

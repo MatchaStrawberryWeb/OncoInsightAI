@@ -1,7 +1,9 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Form
+from typing import Optional
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Form, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+from starlette.middleware.sessions import SessionMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from database_model import init_db, get_db
@@ -18,16 +20,9 @@ import logging
 from backend import crud
 from werkzeug.security import generate_password_hash
 from database_model.activity_log import UserActivityLog
-from dotenv import load_dotenv
 
 # OAuth2PasswordBearer is used to get the token from the Authorization header
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
-# Load environment variables from the .env file
-load_dotenv()
-
-# Get the secret key from the environment variable
-SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -39,6 +34,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Create FastAPI app instance
 app = FastAPI()
 
+app.add_middleware(SessionMiddleware, secret_key="e314e9499c99afce6a8b858a197e10f736722ddcd9ed577e9442bf2a35d3158b")
 
 UPLOAD_DIRECTORY = "./uploads"
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
@@ -77,6 +73,14 @@ class UserCreate(BaseModel):
     username: str
     password: str
 
+class UserProfile(BaseModel):
+    full_name: str
+    username: str
+    department: Optional[str] = None
+    photo_url: Optional[str] = "https://via.placeholder.com/150"
+
+
+
 # Helper functions
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -84,14 +88,27 @@ def verify_password(plain_password, hashed_password):
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
+# Dependency to get the current user from the session
+def get_current_user(request: Request):
+    session = request.session
+    user = session.get("user")
+    if not user:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+    return user
+
+
 # Routes
 @app.post("/login")
-async def login(login_request: LoginRequest, db: Session = Depends(get_db)):
+async def login(login_request: LoginRequest, request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == login_request.username).first()
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     if not verify_password(login_request.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
+
+    # Store user in session
+    request.session["user"] = user.username  # or you can store user id, full_name, etc.
+
     return {"message": "Login successful", "username": user.username}
 
 @app.post("/admin/users")
@@ -112,9 +129,24 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return {"id": new_user.id, "username": new_user.username}
 
-@app.get("/api/profile")
-def get_profile():
-    return {"message": "Profile API"}
+# Route to fetch user profile
+@app.get("/api/profile", response_model=UserProfile)
+def get_profile(current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == current_user).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Returning the profile details
+    return {
+        "full_name": user.full_name,
+        "username": user.username,
+        "department": user.department if user.department else "Not available",
+        "photo_url": user.photo_url if user.photo_url else "https://via.placeholder.com/150",  # Default photo URL
+    }
+
+def get_user_by_username(db: Session, username: str):
+    # Fetch the user from the database based on the username
+    return db.query(models.User).filter(models.User.username == username).first()
 
 # Route to read users (for the admin dashboard)
 @app.get("/admin/users")

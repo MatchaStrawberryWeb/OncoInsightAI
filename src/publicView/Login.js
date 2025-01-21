@@ -30,10 +30,11 @@ const Login = () => {
       console.log("Login response:", data);
   
       if (response.ok) {
-        // Save the token to localStorage
+        // Save the token and username to localStorage
         localStorage.setItem('token', data.access_token);
-        
-        // Check if the logged-in user is an admin
+        localStorage.setItem('username', username);  // Save the username
+  
+        // Display success message and redirect
         if (username === "admin") {
           setMessage("Admin login successful! Redirecting...");
           setTimeout(() => {
@@ -46,17 +47,18 @@ const Login = () => {
           }, 1500);
         }
   
-        setError("");
+        setError("");  // Clear any previous error messages
       } else {
         setError(data.detail || "Invalid credentials. Please contact the admin.");
-        setMessage("");
+        setMessage("");  // Clear success message on error
       }
     } catch (err) {
       console.error("Error during login:", err);
       setError("An error occurred while trying to log in. Please try again.");
-      setMessage("");
+      setMessage("");  // Clear success message on error
     }
   };
+  
     
 
   return (
