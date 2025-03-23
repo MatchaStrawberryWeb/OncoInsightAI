@@ -16,6 +16,7 @@ import MedicalRecords from "./components/patientData/MedicalRecords";
 import Report from "./components/Report";
 import AdminActivityLogs from "./components/AdminActivityLogs";
 import Profile from "./components/Profile";
+import Help from "./components/Help";
 import BreastCancer from "./components/BreastCancer";
 import LungCancer from "./components/LungCancer";
 import ProstateCancer from "./components/ProstateCancer";
@@ -47,6 +48,7 @@ const App = () => {
         />
 
         <Route path="/profile" element={<Profile />} />
+        <Route path="/help" element={<Help />} />
 
         {/* Routes for Patient Data */}
         <Route path="/cancer-diagnosis" element={<CancerDiagnosis />} />
