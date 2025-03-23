@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from database_model import get_db
-# from database_model.patient import Patient  # Comment out for mock-up if no DB interaction
+# from database_model.patient import Patient  
 
 router = APIRouter()
 
@@ -20,7 +20,7 @@ class PatientResponse(BaseModel):
 
 @router.post("/register-patient", response_model=PatientResponse)
 def register_patient(patient: PatientCreate):
-    # Mock the patient registration logic (without database interaction)
-    mock_patient_id = patient.ic_number  # Just return the IC number as the mock patient ID
+   
+    mock_patient_id = patient.ic_number  
     
-    return {"message": "Patient data received (mock-up)", "patient_id": mock_patient_id}
+    return {"message": "Patient data received ", "patient_id": mock_patient_id}

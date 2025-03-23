@@ -1,5 +1,3 @@
-# utils/predictor.py
-
 import numpy as np
 from PIL import Image
 from tensorflow.keras.applications.vgg16 import VGG16

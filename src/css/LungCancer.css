@@ -1,0 +1,120 @@
+.lung-cancer-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    width: 80%;
+    max-width: 1200px; 
+  }
+  
+  h1, h2 {
+    color: #008080;
+  }
+  
+  .doctor-hierarchy,
+  .upload-documents {
+    width: 80%; 
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .hierarchy {
+    list-style-type: none;
+    margin-left: 250px;
+  }
+  
+  .hierarchy li {
+    margin: 10px 0;
+    padding-left: 20px;
+    position: relative;
+  }
+  
+  .hierarchy li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #008080;
+  }
+  
+  .upload-documents form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px; /* Slightly increase form width */
+    margin-left: 250px;
+  }
+  
+  .upload-documents label {
+    margin: 10px 0 5px;
+    font-weight: bold;
+  }
+  
+  .upload-documents input {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .upload-documents button {
+    background-color: #008080;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .upload-documents button:hover {
+    background-color: #005757;
+  }
+  
+  .forum-section {
+    margin-top: 20px;
+  }
+  
+  .create-forum {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .create-forum input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .create-forum button {
+    background-color: #008080;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .create-forum button:hover {
+    background-color: #005757;
+  }
+  
+  .forums {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .forums li {
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  
+  .forums h3 {
+    margin: 0;
+    color: #008080;
+  }
+  

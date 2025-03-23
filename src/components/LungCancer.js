@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import "../css/BreastCancer.css";
+import "../css/LungCancer.css";
 import Sidebar from '../components/Sidebar'; // Make sure this path is correct
 
-const BreastCancerPage = () => {
+const LungCancerPage = () => {
   const [forums, setForums] = useState([]);
   const [newForum, setNewForum] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
@@ -39,12 +39,12 @@ const BreastCancerPage = () => {
       {/* Use Sidebar component */}
       <Sidebar />
 
-      <div className="breast-cancer-page">
-        <h1>Breast Cancer Department</h1>
+      <div className="lung-cancer-page">
+        <h1>Lung Cancer Department</h1>
 
         {/* Doctor Hierarchy Section */}
         <div className="doctor-hierarchy">
-          <h2>Doctors in the Breast Cancer Department</h2>
+          <h2>Doctors in the Lung Cancer Department</h2>
           <ul className="hierarchy">
             <li>
               Head of Department: Dr. Sarah Razali
@@ -65,7 +65,7 @@ const BreastCancerPage = () => {
 
         {/* Upload Document Section */}
         <div className="upload-documents">
-          <h2>Upload Documents About Breast Cancer</h2>
+          <h2>Upload Documents About Lung Cancer</h2>
           <form onSubmit={handleDocumentSubmit}>
             <label>Document Title:</label>
             <input
@@ -117,4 +117,4 @@ const BreastCancerPage = () => {
   );
 };
 
-export default BreastCancerPage;
+export default LungCancerPage;

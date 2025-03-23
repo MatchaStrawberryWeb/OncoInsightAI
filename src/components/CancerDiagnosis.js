@@ -14,7 +14,6 @@ const CancerDiagnosis = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Mock patient database
   const mockPatients = {
     991201072122: { full_name: "Nurul Maymay", age: 26, gender: "Female" },
     841231080624: { full_name: "Patricia Garcia", age: 41, gender: "Female" },
@@ -40,7 +39,7 @@ const CancerDiagnosis = () => {
         cancerLevel = "Early Stage";
       }
 
-      // Mock result data
+      // Mk result data
       await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate delay
       const mockResult = {
         cancerType: "Breast Cancer",

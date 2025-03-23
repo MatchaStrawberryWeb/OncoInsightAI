@@ -113,8 +113,21 @@ function AdminDashboard() {
         )
         : users;
 
+    // Handle logout
+    const handleLogout = () => {
+        // Perform the logout operation (like clearing session or redirecting)
+        alert("Logging out...");
+        // You can redirect to the login page or clear session/cookies
+        window.location.href = "/login";
+    };
+
     return (
         <div className="admin-dashboard-container">
+            {/* Logout Button */}
+            <div className="logout-button-container">
+                <button className="logout-btn" onClick={handleLogout}>Logout</button>
+            </div>
+
             <h2>Admin Dashboard</h2>
             {/* Navigation */}
             <nav>

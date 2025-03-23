@@ -20,9 +20,13 @@ import logging
 from backend import crud
 from werkzeug.security import generate_password_hash
 from database_model.activity_log import UserActivityLog
+from backend.routes.users import router as users_router
 
 # OAuth2PasswordBearer is used to get the token from the Authorization header
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,7 +38,15 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Create FastAPI app instance
 app = FastAPI()
 
-app.add_middleware(SessionMiddleware, secret_key="e314e9499c99afce6a8b858a197e10f736722ddcd9ed577e9442bf2a35d3158b")
+# Include the user routes
+app.include_router(users_router, prefix="/api", tags=["users"])
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="e314e9499c99afce6a8b858a197e10f736722ddcd9ed577e9442bf2a35d3158b",  
+    session_cookie="onco_session",  
+)
+
 
 UPLOAD_DIRECTORY = "./uploads"
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
@@ -107,9 +119,11 @@ async def login(login_request: LoginRequest, request: Request, db: Session = Dep
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
     # Store user in session
-    request.session["user"] = user.username  # or you can store user id, full_name, etc.
+    request.session["user"] = user.username  # Ensure this value is stored as a string
+    print("Session data:", request.session)  # Debug: Print session data
 
     return {"message": "Login successful", "username": user.username}
+
 
 @app.post("/admin/users")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -129,20 +143,24 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return {"id": new_user.id, "username": new_user.username}
 
-# Route to fetch user profile
-@app.get("/api/profile", response_model=UserProfile)
-def get_profile(current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == current_user).first()
+# Profile endpoint
+@app.get("/profile")
+async def get_profile(request: Request, db: Session = Depends(get_db)):
+    username = request.session.get("user")
+    if not username:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+
+    user = db.query(User).filter(User.username == username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
-    # Returning the profile details
+
     return {
-        "full_name": user.full_name,
+        "fullName": user.full_name or "Not Available",
         "username": user.username,
-        "department": user.department if user.department else "Not available",
-        "photo_url": user.photo_url if user.photo_url else "https://via.placeholder.com/150",  # Default photo URL
+        "department": user.department or "Not Available",
+        "createdAt": user.created_at.strftime("%Y-%m-%d %H:%M:%S")
     }
+
 
 def get_user_by_username(db: Session, username: str):
     # Fetch the user from the database based on the username
@@ -252,7 +270,8 @@ async def get_all_patients(db: Session = Depends(get_db)):
     return patients
 
 # Endpoint to update the patient's medical report (file)
-@app.put("/update-patient-records/{ic_number}")
+@app.put("/medical-records/{ic_number}")
+
 async def update_patient_records(
     ic_number: str,
     file: UploadFile = File(None),  # Optional file upload
@@ -263,8 +282,13 @@ async def update_patient_records(
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
 
+    # Ensure the 'uploaded_files' directory exists
+    upload_dir = "uploaded_files"
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+
     if file:
-        file_path = f"uploaded_files/{file.filename}"  # Adjust as necessary
+        file_path = f"{upload_dir}/{file.filename}"  # Save file in the 'uploaded_files' directory
         with open(file_path, "wb") as f:
             f.write(await file.read())
         patient.file = file_path  # Save file path to the database

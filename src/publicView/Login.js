@@ -33,7 +33,8 @@ const Login = () => {
         // Save the token and username to localStorage
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('username', username);  // Save the username
-  
+        localStorage.setItem('isLoggedIn', true);    // Added: Set login status
+
         // Display success message and redirect
         if (username === "admin") {
           setMessage("Admin login successful! Redirecting...");
@@ -58,8 +59,6 @@ const Login = () => {
       setMessage("");  // Clear success message on error
     }
   };
-  
-    
 
   return (
     <div className="login-container">

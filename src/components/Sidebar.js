@@ -72,13 +72,13 @@ const Sidebar = () => {
                             {!collapsed && <span>Cancer Diagnosis</span>}
                         </Link>
                         {!collapsed && (
-                            <ul className="submenu">
-                                <li><Link to="/cancer-diagnosis/breast-cancer">Breast Cancer</Link></li>
-                                <li><Link to="/cancer-diagnosis/lung-cancer">Lung Cancer</Link></li>
-                                <li><Link to="/cancer-diagnosis/prostate-cancer">Prostate Cancer</Link></li>
-                                <li><Link to="/cancer-diagnosis/skin-cancer">Skin Cancer</Link></li>
-                                <li><Link to="/cancer-diagnosis/colorectal-cancer">Colorectal Cancer</Link></li>
-                            </ul>
+                           <ul className="submenu">
+                           <li><Link to="/breast-cancer">Breast Cancer</Link></li>
+                           <li><Link to="/lung-cancer">Lung Cancer</Link></li>
+                           <li><Link to="/prostate-cancer">Prostate Cancer</Link></li>
+                           <li><Link to="/skin-cancer">Skin Cancer</Link></li>
+                           <li><Link to="/colorectal-cancer">Colorectal Cancer</Link></li>
+                       </ul>
                         )}
                     </li>
 
