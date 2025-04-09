@@ -1,0 +1,15 @@
+fastapi==0.95.1
+sqlalchemy==2.0.9
+pydantic==1.10.2
+passlib==1.7.4
+werkzeug==2.3.4
+joblib==1.2.0
+python-dotenv==1.0.0
+uvicorn==0.22.0
+requests==2.28.2
+Pillow==9.2.0
+tensorflow
+itsdangerous==2.1.1
+pymysql==1.0.2
+
+
