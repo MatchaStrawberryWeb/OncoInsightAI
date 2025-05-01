@@ -1,315 +1,49 @@
-from typing import Optional
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Form, Request
-from fastapi.responses import JSONResponse
+# main.py
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
 from starlette.middleware.sessions import SessionMiddleware
-from pydantic import BaseModel
-from sqlalchemy.orm import Session
-from database_model import init_db, get_db
-from database_model.activity_log import UserActivityLog
-from database_model.user import User, hash_password
-from database_model.patient import Patient
-from passlib.context import CryptContext
-from utils.predictor import preprocess_image, predict_with_models 
-from utils.file_utils import save_diagnosis_file
-import joblib
-import shutil
+from api_routes import auth_routes, users_routes, patient_routes, diagnosis
+from database_model import init_db
 import os
-import logging
-from backend import crud
-from werkzeug.security import generate_password_hash
-from database_model.activity_log import UserActivityLog
-from backend.routes.users import router as users_router
+import joblib
 
-# OAuth2PasswordBearer is used to get the token from the Authorization header
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Create bcrypt context for password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-# Create FastAPI app instance
+# Initialize FastAPI app
 app = FastAPI()
 
-# Include the user routes
-app.include_router(users_router, prefix="/api", tags=["users"])
+# Include routers
+app.include_router(auth_routes.router, prefix="/api", tags=["auth"])
+app.include_router(users_routes.router, prefix="/api", tags=["users"])
+app.include_router(patient_routes.router, prefix="/api", tags=["patients"])
+app.include_router(diagnosis.router, prefix="/api", tags=["diagnosis"])
 
+# Session middleware
 app.add_middleware(
     SessionMiddleware,
-    secret_key="e314e9499c99afce6a8b858a197e10f736722ddcd9ed577e9442bf2a35d3158b",  
-    session_cookie="onco_session",  
+    secret_key="e314e9499c99afce6a8b858a197e10f736722ddcd9ed577e9442bf2a35d3158b",
+    session_cookie="onco_session",
 )
 
-
-UPLOAD_DIRECTORY = "./uploads"
-os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
-
-# Enable CORS for all origins (update with frontend URL for security)
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace "*" with the actual URL for production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Load all trained models
+# Load models
 models = {
-    "breast_cancer": joblib.load("models/breast_cancer_model.pkl"),
-    "colorectal_cancer": joblib.load("models/colorectal_cancer_model.pkl"),
-    "dermatology": joblib.load("models/dermatology_model.pkl"),
-    "lung_cancer": joblib.load("models/lung_cancer_model.pkl"),
-    "prostate_cancer": joblib.load("models/prostate_cancer_model.pkl"),
+    "breast_cancer": joblib.load("trained_models/breast_cancer_model.pkl"),
+    "colorectal_cancer": joblib.load("trained_models/colorectal_cancer_model.pkl"),
+    "dermatology": joblib.load("trained_models/dermatology_model.pkl"),
+    "lung_cancer": joblib.load("trained_models/lung_cancer_model.pkl"),
+    "prostate_cancer": joblib.load("trained_models/prostate_cancer_model.pkl"),
 }
 
-
-# Pydantic models
-class LoginRequest(BaseModel):
-    username: str
-    password: str
-
-class PatientDetails(BaseModel):
-    ic_number: str
-    full_name: str
-    age: int
-    gender: str
-
-class UserCreate(BaseModel):
-    username: str
-    password: str
-
-class UserProfile(BaseModel):
-    full_name: str
-    username: str
-    department: Optional[str] = None
-    photo_url: Optional[str] = "https://via.placeholder.com/150"
-
-
-
-# Helper functions
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-# Dependency to get the current user from the session
-def get_current_user(request: Request):
-    session = request.session
-    user = session.get("user")
-    if not user:
-        raise HTTPException(status_code=401, detail="User not authenticated")
-    return user
-
-
-# Routes
-@app.post("/login")
-async def login(login_request: LoginRequest, request: Request, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == login_request.username).first()
-    if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-    if not verify_password(login_request.password, user.password_hash):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-
-    # Store user in session
-    request.session["user"] = user.username  # Ensure this value is stored as a string
-    print("Session data:", request.session)  # Debug: Print session data
-
-    return {"message": "Login successful", "username": user.username}
-
-
-@app.post("/admin/users")
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    """
-    Create a new user.
-    """
-    # Check if the username already exists
-    existing_user = db.query(User).filter(User.username == user.username).first()
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Username already exists")
-
-    # Create the new user
-    hashed_password = hash_password(user.password)  # Ensure password is hashed
-    new_user = User(username=user.username, password_hash=hashed_password)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return {"id": new_user.id, "username": new_user.username}
-
-# Profile endpoint
-@app.get("/profile")
-async def get_profile(request: Request, db: Session = Depends(get_db)):
-    username = request.session.get("user")
-    if not username:
-        raise HTTPException(status_code=401, detail="User not authenticated")
-
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    return {
-        "fullName": user.full_name or "Not Available",
-        "username": user.username,
-        "department": user.department or "Not Available",
-        "createdAt": user.created_at.strftime("%Y-%m-%d %H:%M:%S")
-    }
-
-
-def get_user_by_username(db: Session, username: str):
-    # Fetch the user from the database based on the username
-    return db.query(models.User).filter(models.User.username == username).first()
-
-# Route to read users (for the admin dashboard)
-@app.get("/admin/users")
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
-    return users
-
-@app.put("/admin/users/{user_id}")
-def update_user(user_id: int, user: UserCreate, db: Session = Depends(get_db)):
-    """
-    Update an existing user's information.
-    """
-    existing_user = db.query(User).filter(User.id == user_id).first()
-    if not existing_user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    # Update username and password if provided
-    if user.username:
-        existing_user.username = user.username
-    if user.password:
-        existing_user.password_hash = hash_password(user.password)  # Re-hash password
-
-    db.commit()
-    db.refresh(existing_user)
-
-    return {"id": existing_user.id, "username": existing_user.username}
-
-# Route to delete a user
-@app.delete("/admin/users/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    """
-    Delete a user by ID.
-    """
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    db.delete(user)
-    db.commit()
-    return {"message": "User deleted successfully"}
-
-# Route to get activity logs
-@app.get("/admin/activity_logs")
-def get_activity_logs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    logs = db.query(UserActivityLog).offset(skip).limit(limit).all()
-    return logs
-
-
-@app.get("/patient/{ic_number}")
-async def get_patient_details(ic_number: str, db: Session = Depends(get_db)):
-    patient = db.query(Patient).filter(Patient.ic_number == ic_number).first()
-    if not patient:
-        raise HTTPException(status_code=404, detail="Patient not found")
-    return {
-        "ic_number": patient.ic_number,
-        "full_name": patient.full_name,
-        "age": patient.age,
-        "gender": patient.gender,
-    }
-
-
-@app.post("/diagnose")
-async def diagnose(ic_number: str = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db)):
-    # Fetch patient from database
-    patient = db.query(Patient).filter(Patient.ic_number == ic_number).first()
-    if not patient:
-        raise HTTPException(status_code=404, detail="Patient not found")
-
-    # Save uploaded file securely
-    file_path = await save_diagnosis_file(file)
-
-    # Preprocess image and make predictions
-    image_array = preprocess_image(file_path)
-    results = predict_with_models(models, image_array)
-
-    # Delete temporary file after processing
-    os.remove(file_path)
-
-    return JSONResponse(content={"patient": patient, "results": results})
-
-@app.post("/register-patient")
-async def register_patient(
-    ic_number: str = Form(...),
-    full_name: str = Form(...),
-    age: int = Form(...),
-    gender: str = Form(...),
-    file: UploadFile = File(...),
-):
-    # Mock response for demo
-    return {
-        "message": "Patient data and file uploaded successfully!",
-        "patient": {
-            "ic_number": ic_number,
-            "full_name": full_name,
-            "age": age,
-            "gender": gender,
-        },
-    }
-
-@app.get("/api/patients")
-async def get_all_patients(db: Session = Depends(get_db)):
-    patients = db.query(Patient).all()
-    return patients
-
-# Endpoint to update the patient's medical report (file)
-@app.put("/medical-records/{ic_number}")
-
-async def update_patient_records(
-    ic_number: str,
-    file: UploadFile = File(None),  # Optional file upload
-    medical_record: str = Form(...),  # Updated medical record
-    db: Session = Depends(get_db)
-):
-    patient = db.query(Patient).filter(Patient.ic_number == ic_number).first()
-    if not patient:
-        raise HTTPException(status_code=404, detail="Patient not found")
-
-    # Ensure the 'uploaded_files' directory exists
-    upload_dir = "uploaded_files"
-    if not os.path.exists(upload_dir):
-        os.makedirs(upload_dir)
-
-    if file:
-        file_path = f"{upload_dir}/{file.filename}"  # Save file in the 'uploaded_files' directory
-        with open(file_path, "wb") as f:
-            f.write(await file.read())
-        patient.file = file_path  # Save file path to the database
-
-    patient.medical_record = medical_record  # Update medical record
-    db.commit()
-    return {"message": "Patient record updated successfully"}
-
-
-
-@app.exception_handler(FileNotFoundError)
-async def file_not_found_exception_handler(request, exc):
-    logger.error(f"FileNotFoundError: {exc}")
-    return JSONResponse(content={"error": str(exc)}, status_code=404)
-
-
-@app.exception_handler(Exception)
-async def general_exception_handler(request, exc):
-    logger.error(f"Unhandled exception: {exc}")
-    return JSONResponse(content={"error": str(exc)}, status_code=500)
-
+# Make sure the uploads directory exists
+UPLOAD_DIRECTORY = "./uploads"
+os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 # Initialize the database
 init_db()

@@ -19,7 +19,7 @@ class User(Base):
     full_name = Column(String(255), nullable=True)
 
     # Establish relationship with UserActivityLog
-    activity_logs = relationship("UserActivityLog", back_populates="user")
+    #activity_logs = relationship("UserActivityLog", back_populates="user")
 
 # Pydantic model for responses
 class UserProfile(BaseModel):

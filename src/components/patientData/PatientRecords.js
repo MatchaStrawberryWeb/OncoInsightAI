@@ -1,121 +1,501 @@
 import React, { useState } from "react";
-import '../../css/PatientRecords.css'
+import '../../css/PatientRecords.css';
 import Sidebar from "../Sidebar";
 
 const PatientRecords = () => {
-  const [icNumber, setIcNumber] = useState("");
+  const [ic, setIcNumber] = useState("");
   const [fullName, setFullName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const [diseases, setDiseases] = useState({
-    diabetes: "No",
-    highBloodPressure: "No",
-    heartDisease: "No",
-    asthma: "No"
+  const [formData, setFormData] = useState({
+    height: "",
+    weight: "",
+    bloodType: "",
+    diabetes: "",
+    highBloodPressure: "",
+    heartDisease: "",
+    asthma: "",
+    allergies: "",
+    medications: "",
+    surgeries: "",
+    familyHistory: "",
+    smoking: "",
+    alcohol: "",
+    hearingRight: "",
+    hearingLeft: "",
+    eyesightRight: "",
+    eyesightLeft: "",
+    visualAidRight: "",
+    visualAidLeft: "",
+    colorVision: "",
+    urinalysis: "",
+    ecg: "",
+    xray: "",
+    emergency_contact_name: "",
+    emergency_contact_number: "",
+    relationship_to_emergency_contact: ""
   });
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [submittedDetails, setSubmittedDetails] = useState(null);
 
-  const handleDiseaseChange = (disease, value) => {
-    setDiseases((prev) => ({ ...prev, [disease]: value }));
+  const handleIcChange = (e) => {
+    const ic = e.target.value;
+    setIcNumber(ic);
+
+    if (ic.length >= 12) {
+      const yearPrefix = ic.substring(0, 2);
+      let birthYear = parseInt(yearPrefix, 10);
+
+      if (birthYear >= 50) {
+        birthYear += 1900;
+      } else {
+        birthYear += 2000;
+      }
+
+      const currentYear = new Date().getFullYear();
+      const calculatedAge = currentYear - birthYear;
+      setAge(calculatedAge);
+
+      const lastDigit = parseInt(ic[ic.length - 1]);
+      setGender(lastDigit % 2 === 0 ? "Female" : "Male");
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append("ic_number", icNumber);
-    formData.append("full_name", fullName);
-    formData.append("age", age);
-    formData.append("gender", gender);
-    formData.append("file", selectedFile);
-    Object.entries(diseases).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
+    let diabetesLevel = "Normal";
+    if (formData.diabetes) {
+      const val = parseFloat(formData.diabetes);
+      if (val < 70) diabetesLevel = "Low";
+      else if (val > 125) diabetesLevel = "High";
+    }
 
-    try {
-      const response = await fetch("http://127.0.0.1:8000/register-patient", {
-        method: "POST",
-        body: formData,
-      });
+    let bpLevel = "Normal";
+    if (formData.highBloodPressure) {
+      const val = parseFloat(formData.highBloodPressure);
+      if (val < 90) bpLevel = "Low";
+      else if (val > 140) bpLevel = "High";
+    }
 
-      const data = await response.json();
-      if (response.ok) {
-        setSubmittedDetails({
-          ic_number: icNumber,
-          full_name: fullName,
-          age: age,
-          gender: gender,
-          file_name: selectedFile?.name || "No file uploaded",
-          ...diseases
+    const form = new FormData();
+    form.append("ic", ic);
+    form.append("full_name", fullName);
+    form.append("age", age);
+    form.append("gender", gender);
+    form.append("file", selectedFile);
+
+    form.append("diabetes", `${formData.diabetes} (${diabetesLevel})`);
+    form.append("high_blood_pressure", `${formData.highBloodPressure} (${bpLevel})`);
+
+    // Append remaining fields (if any others exist in formData)
+    for (const [key, value] of Object.entries(formData)) {
+      if (key !== "diabetes" && key !== "highBloodPressure") {
+        form.append(key, value);
+      }
+    }
+
+      try {
+        const response = await fetch("http://localhost:8000/api/patients/", {
+          method: "POST",
+          body: form
         });
-        setSuccessMessage(data.message || "Patient data and file uploaded successfully!");
-        setErrorMessage("");
-      } else {
-        setErrorMessage(data.detail || "Failed to upload patient data.");
+      
+        let data;
+        try {
+          data = await response.json();
+        } catch {
+          const text = await response.text();
+          data = { detail: text };
+        }
+      
+        if (response.ok) {
+          setSubmittedDetails({
+            ic_number: ic,
+            full_name: fullName,
+            age,
+            gender,
+            file_name: selectedFile?.name || "No file uploaded",
+            ...formData,
+            diabetes: `${formData.diabetes} (${diabetesLevel})`,
+            highBloodPressure: `${formData.highBloodPressure} (${bpLevel})`
+          });
+          setSuccessMessage(data.message || "Patient data and file uploaded successfully!");
+          setErrorMessage("");
+        } else {
+          setErrorMessage(data.detail || "Failed to upload patient data.");
+          setSuccessMessage("");
+        }
+      } catch (error) {
+        setErrorMessage("An error occurred while uploading patient data.");
         setSuccessMessage("");
       }
-    } catch (error) {
-      setErrorMessage("An error occurred while uploading patient data.");
-      setSuccessMessage("");
-    }
-  };
+    };
 
   return (
-    <div className="upload-scan-page">
+    <div className="patient-records">
       <Sidebar />
-      <div className="upload-scan-results">
+      <div className="patient-records-content">
         <h2>Patient Records</h2>
         <form onSubmit={handleSubmit}>
-          <div>
-            <label>IC Number:</label>
-            <input type="text" value={icNumber} onChange={(e) => setIcNumber(e.target.value)} required />
-          </div>
-          <div>
-            <label>Full Name:</label>
-            <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-          </div>
-          <div>
-            <label>Age:</label>
-            <input type="number" value={age} onChange={(e) => setAge(e.target.value)} required />
-          </div>
-          <div>
-            <label>Gender:</label>
-            <select value={gender} onChange={(e) => setGender(e.target.value)} required>
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          </div>
+          {/* Basic Info */}
+          <div className="grid grid-cols-2 gap-4">
+            <h3 className="section-title">Basic Information</h3>
 
-          {/* Disease Questions */}
-          {Object.keys(diseases).map((disease) => (
-            <div key={disease}>
-              <label>{disease.replace(/([A-Z])/g, ' $1').trim()}:</label>
-              <label>
-                <input type="radio" name={disease} value="Yes" checked={diseases[disease] === "Yes"} onChange={() => handleDiseaseChange(disease, "Yes")} /> Yes
-              </label>
-              <label>
-                <input type="radio" name={disease} value="No" checked={diseases[disease] === "No"} onChange={() => handleDiseaseChange(disease, "No")} /> No
-              </label>
+            <div className="form-group">
+              <label>IC Number:</label>
+              <input
+                type="text"
+                value={ic}
+                onChange={handleIcChange}
+                placeholder="e.g., 991201072122"
+                required
+              />
             </div>
-          ))}
 
-          <div>
-            <label>Upload File:</label>
-            <input type="file" onChange={(e) => setSelectedFile(e.target.files[0])} />
+            <div className="form-group">
+              <label>Full Name:</label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="e.g., Full Name as per IC"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Age:</label>
+              <input type="number" value={age} readOnly />
+            </div>
+
+            <div className="form-group">
+              <label>Gender:</label>
+              <input type="text" value={gender} readOnly />
+            </div>
           </div>
-          <button type="submit">Submit</button>
+
+          {/* Vitals */}
+          <div className="grid grid-cols-2 gap-4">
+            <h3 className="section-title">Vitals</h3>
+
+            <div className="form-group">
+              <label>Height (cm):</label>
+              <input
+                type="number"
+                name="height"
+                value={formData.height}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Weight (kg):</label>
+              <input
+                type="number"
+                name="weight"
+                value={formData.weight}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Blood Type:</label>
+              <select
+                name="bloodType"
+                value={formData.bloodType}
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Medical History */}
+          <div className="grid grid-cols-2 gap-4">
+            <h3 className="section-title">Medical History</h3>
+
+            <div className="form-group">
+              <label>Diabetes (Fasting Blood Sugar - mg/dL):</label>
+              <input
+                type="number"
+                name="diabetes"
+                value={formData.diabetes}
+                onChange={handleChange}
+                placeholder="e.g. 85"
+              />
+            </div>
+            <div className="form-group">
+              <label>Medications:</label>
+              <input
+                type="text"
+                name="medications"
+                value={formData.medications}
+                onChange={handleChange}
+                placeholder="e.g., Metformin, Aspirin"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>High Blood Pressure (Systolic - mmHg):</label>
+              <input
+                type="number"
+                name="highBloodPressure"
+                value={formData.highBloodPressure}
+                onChange={handleChange}
+                placeholder="e.g. 120"
+              />
+            </div>
+            <div className="form-group">
+              <label>Allergies:</label>
+              <input
+                type="text"
+                name="allergies"
+                value={formData.allergies}
+                onChange={handleChange}
+                placeholder="e.g., Penicillin, Peanuts"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Heart Disease:</label>
+              <input
+                type="text"
+                name="heartDisease"
+                value={formData.heartDisease}
+                onChange={handleChange}
+                placeholder="e.g., Coronary artery disease"
+              />
+            </div>
+            <div className="form-group">
+              <label>Surgeries:</label>
+              <input
+                type="text"
+                name="surgeries"
+                value={formData.surgeries}
+                onChange={handleChange}
+                placeholder="e.g., Appendectomy in 2018"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Asthma:</label>
+              <input
+                type="text"
+                name="asthma"
+                value={formData.asthma}
+                onChange={handleChange}
+                placeholder="e.g., Mild intermittent asthma"
+              />
+            </div>
+            <div className="form-group">
+              <label>Family History:</label>
+              <input
+                type="text"
+                name="familyHistory"
+                value={formData.familyHistory}
+                onChange={handleChange}
+                placeholder="e.g., Father had diabetes"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Lifestyle */}
+            <div>
+              <h3 className="section-title">Lifestyle</h3>
+              <div className="form-group">
+                <label>Smoking:</label>
+                <select name="smoking" value={formData.smoking} onChange={handleChange}>
+                  <option value="">Select</option>
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                  <option value="Former Smoker">Former Smoker</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Alcohol Use:</label>
+                <select name="alcohol" value={formData.alcohol} onChange={handleChange}>
+                  <option value="">Select</option>
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                  <option value="Occasionally">Occasionally</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Vision & Hearing */}
+            <div>
+              <h3 className="section-title">Vision & Hearing</h3>
+
+              <div className="form-group">
+                <label>Hearing:</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <select name="hearingRight" value={formData.hearingRight} onChange={handleChange}>
+                    <option value="Normal">Normal</option>
+                    <option value="Impaired">Impaired</option>
+                    <option value="Deaf">Deaf</option>
+                  </select>
+                  <select name="hearingLeft" value={formData.hearingLeft} onChange={handleChange}>
+                    <option value="Normal">Normal</option>
+                    <option value="Impaired">Impaired</option>
+                    <option value="Deaf">Deaf</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Eyesight:</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <select name="eyesightRight" value={formData.eyesightRight} onChange={handleChange}>
+                    <option value="Normal">Normal</option>
+                    <option value="Impaired">Impaired</option>
+                    <option value="Blind">Blind</option>
+                  </select>
+                  <select name="eyesightLeft" value={formData.eyesightLeft} onChange={handleChange}>
+                    <option value="Normal">Normal</option>
+                    <option value="Impaired">Impaired</option>
+                    <option value="Blind">Blind</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Eyesight (with visual aids):</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <select name="visualAidRight" value={formData.visualAidRight} onChange={handleChange}>
+                    <option value="Normal">Normal</option>
+                    <option value="Impaired">Impaired</option>
+                    <option value="Blind">Blind</option>
+                  </select>
+                  <select name="visualAidLeft" value={formData.visualAidLeft} onChange={handleChange}>
+                    <option value="Normal">Normal</option>
+                    <option value="Impaired">Impaired</option>
+                    <option value="Blind">Blind</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Color Vision:</label>
+                <input type="text" name="colorVision" value={formData.colorVision} onChange={handleChange} placeholder="e.g., Normal" />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            {/* Lab & Diagnostic Results */}
+            <div>
+              <h3 className="section-title">Lab & Diagnostic Results</h3>
+              <div className="form-group">
+                <label>Urinalysis (Protein/Albumin):</label>
+                <input
+                  type="text"
+                  name="urinalysis"
+                  value={formData.urinalysis}
+                  onChange={handleChange}
+                  placeholder="e.g., Negative"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>ECG:</label>
+                <select name="ecg" value={formData.ecg} onChange={handleChange}>
+                  <option value="">Select</option>
+                  <option value="Normal">Normal</option>
+                  <option value="Abnormal">Abnormal</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Chest X-Ray:</label>
+                <select name="xray" value={formData.xray} onChange={handleChange}>
+                  <option value="">Select</option>
+                  <option value="Normal">Normal</option>
+                  <option value="Abnormal">Abnormal</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Emergency Contact */}
+            <div>
+              <div className="grid grid-cols-2 gap-4">
+                <h3 className="section-title">Emergency Contact</h3>
+                <div className="form-group">
+                  <label>Emergency Contact Name:</label>
+                  <input
+                    type="text"
+                    name="emergency_contact_name"
+                    value={formData.emergency_contact_name}
+                    onChange={handleChange}
+                    placeholder="e.g., Full Name as per IC"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Emergency Contact Number:</label>
+                  <input
+                    type="text"
+                    name="emergency_contact_number"
+                    value={formData.emergency_contact_number}
+                    onChange={handleChange}
+                    placeholder="e.g., 0123456789"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Relationship:</label>
+                  <input
+                    type="text"
+                    name="relationship_to_emergency_contact"
+                    value={formData.relationship_to_emergency_contact}
+                    onChange={handleChange}
+                    placeholder="e.g., Spouse"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* File Upload */}
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            <h3 className="section-title">Upload Medical File</h3>
+
+            <div>
+              <label>Upload File:</label>
+              <input type="file" onChange={(e) => setSelectedFile(e.target.files[0])} />
+            </div>
+
+            {/* Submit Button */}
+            <div className="section mt-6">
+              <button type="submit">Submit</button>
+            </div>
+          </div>
         </form>
+      </div>
 
-        {successMessage && <p className="success-message">{successMessage}</p>}
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
+      {successMessage && <p className="success-message">{successMessage}</p>}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-        {submittedDetails && (
+      {
+        submittedDetails && (
           <div className="submitted-details">
             <h3>Submitted Patient Details:</h3>
             <p>IC Number: {submittedDetails.ic_number}</p>
@@ -123,14 +503,14 @@ const PatientRecords = () => {
             <p>Age: {submittedDetails.age}</p>
             <p>Gender: {submittedDetails.gender}</p>
             <p>File Uploaded: {submittedDetails.file_name}</p>
-            <h4>Diseases:</h4>
-            {Object.entries(submittedDetails).map(([key, value]) => (
-              diseases[key] !== undefined && <p key={key}>{key.replace(/([A-Z])/g, ' $1').trim()}: {value}</p>
+            <h4>Medical Details:</h4>
+            {Object.entries(formData).map(([key, value]) => (
+              <p key={key}>{key.replace(/([A-Z])/g, " $1")}: {value}</p>
             ))}
           </div>
-        )}
-      </div>
-    </div>
+        )
+      }
+    </div >
   );
 };
 
