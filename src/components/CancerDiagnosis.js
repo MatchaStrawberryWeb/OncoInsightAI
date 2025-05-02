@@ -1,254 +1,258 @@
-
-import React, { useState } from "react";
-import axios from "axios";
-import Sidebar from "../components/Sidebar";
-import "../css/CancerDiagnosis.css";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import '../css/CancerDiagnosis.css';
+import Sidebar from './Sidebar';
 
 const CancerDiagnosis = () => {
-  const [icNumber, setIcNumber] = useState("");
-  const [patientDetails, setPatientDetails] = useState(null);
-  const [file, setFile] = useState(null);
-  const [result, setResult] = useState(null);
-  const [survivalPrediction, setSurvivalPrediction] = useState(null);
-  const [treatmentGuidance, setTreatmentGuidance] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [selectedCancer, setSelectedCancer] = useState('');
+  const [formData, setFormData] = useState({});
+  const [icData, setIcData] = useState({});
+  const [ic, setIc] = useState('');
 
-  const mockPatients = {
-    991201072122: { full_name: "Nurul Maymay", age: 26, gender: "Female" },
-    841231080624: { full_name: "Patricia Garcia", age: 41, gender: "Female" },
-    901101022118: { full_name: "Sarah Tan", age: 35, gender: "Female" },
+  const handleIcSearch = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/patient/${ic}`);
+      const data = await response.json();
+      setIcData(data);
+    } catch (error) {
+      console.error("Failed to fetch patient data:", error);
+    }
   };
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+
+  const handleCancerChange = (e) => {
+    setSelectedCancer(e.target.value);
+    setFormData({});
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: parseFloat(e.target.value) });
+  };
+
+  const renderCancerForm = () => {
+    const commonProps = {
+      onChange: handleInputChange,
+      type: 'number',
+      className: 'form-input'
+    };
+
+    if (selectedCancer === 'Breast Cancer') {
+      return (
+        <>
+          <div>
+            <label>Radius Mean</label>
+            <input
+              name="radius_mean"
+              placeholder="e.g. 14.32"
+              step="0.01"
+              {...commonProps}
+            />
+          </div>
+          <div>
+            <label>Texture Mean</label>
+            <input
+              name="texture_mean"
+              placeholder="e.g. 19.85"
+              step="0.01"
+              {...commonProps}
+            />
+          </div>
+          <div>
+            <label>Perimeter Mean</label>
+            <input
+              name="perimeter_mean"
+              placeholder="e.g. 88.20"
+              step="0.01"
+              {...commonProps}
+            />
+          </div>
+          <div>
+            <label>Area Mean</label>
+            <input
+              name="area_mean"
+              placeholder="e.g. 500.30"
+              step="0.01"
+              {...commonProps}
+            />
+          </div>
+          <div>
+            <label>Smoothness Mean</label>
+            <input
+              name="smoothness_mean"
+              placeholder="e.g. 0.10"
+              step="0.01"
+              {...commonProps}
+            />
+          </div>
+        </>
+      );
+    }
+    else if (selectedCancer === 'Prostate Cancer') {
+      return (
+        <>
+          <div>
+            <label>Radius</label>
+            <input name="radius" type="number" step="0.01" placeholder="e.g. 14.32" {...commonProps} />
+          </div>
+          <div>
+            <label>Texture</label>
+            <input name="texture" type="number" step="0.01" placeholder="e.g. 19.85" {...commonProps} />
+          </div>
+          <div>
+            <label>Perimeter</label>
+            <input name="perimeter" type="number" step="0.01" placeholder="e.g. 88.20" {...commonProps} />
+          </div>
+          <div>
+            <label>Area</label>
+            <input name="area" type="number" step="0.01" placeholder="e.g. 500.30" {...commonProps} />
+          </div>
+          <div>
+            <label>Smoothness</label>
+            <input name="smoothness" type="number" step="0.01" placeholder="e.g. 0.10" {...commonProps} />
+          </div>
+          <div>
+            <label>Compactness</label>
+            <input name="compactness" type="number" step="0.01" placeholder="e.g. 0.75" {...commonProps} />
+          </div>
+          <div>
+            <label>Symmetry</label>
+            <input name="symmetry" type="number" step="0.01" placeholder="e.g. 0.42" {...commonProps} />
+          </div>
+          <div>
+            <label>Fractal Dimension</label>
+            <input name="fractal_dimension" type="number" step="0.01" placeholder="e.g. 0.06" {...commonProps} />
+          </div>
+        </>
+      );
+
+    } else if (selectedCancer === 'Colorectal Cancer') {
+      return (
+        <>
+          {[...Array(10)].map((_, i) => (
+            <div key={i}>
+              <label>{`Selected Gene Feature ${i + 1}`}</label>
+              <input
+                name={`gene_feature_${i + 1}`}
+                placeholder={`e.g. 0.${i + 1}2`}
+                step="0.01"
+                {...commonProps}
+              />
+            </div>
+          ))}
+        </>
+      );
+
+    } else if (selectedCancer === 'Lung Cancer') {
+      const lungFields = [
+        "SMOKING", "YELLOW_FINGERS", "ANXIETY", "PEER_PRESSURE", "CHRONIC_DISEASE",
+        "FATIGUE", "ALLERGY", "WHEEZING", "ALCOHOL_CONSUMING", "COUGHING",
+        "SHORTNESS_OF_BREATH", "SWALLOWING_DIFFICULTY", "CHEST_PAIN"
+      ];
+
+      return (
+        <>
+          {lungFields.map((field) => (
+            <div key={field} className="form-group">
+              <label>{field.replace(/_/g, ' ')}</label>
+              <div>
+                <label>
+                  <input
+                    type="radio"
+                    name={field}
+                    value={1}
+                    onChange={handleInputChange}
+                  /> Yes
+                </label>
+                <label style={{ marginLeft: '15px' }}>
+                  <input
+                    type="radio"
+                    name={field}
+                    value={0}
+                    onChange={handleInputChange}
+                  /> No
+                </label>
+              </div>
+            </div>
+          ))}
+        </>
+      );
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+
+    const endpointMap = {
+      'Breast Cancer': '/predict_breast',
+      'Lung Cancer': '/predict_lung',
+      'Prostate Cancer': '/predict_prostate',
+      'Colorectal Cancer': '/predict_colorectal'
+    };
+
     try {
-      // Determine cancer stage based on patient age
-      const age = patientDetails?.age;
-      let cancerLevel = "Unknown";
-      if (age >= 40) {
-        cancerLevel = "Stage 4";
-      } else if (age >= 30) {
-        cancerLevel = "Stage 2";
-      } else {
-        cancerLevel = "Early Stage";
-      }
+      const response = await fetch(`http://localhost:8000${endpointMap[selectedCancer]}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
 
-      // Mk result data
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate delay
-      const mockResult = {
-        cancerType: "Breast Cancer",
-        cancerLevel,
-      };
-      setResult(mockResult);
+      const result = await response.json();
+      console.log('Prediction result:', result);
     } catch (error) {
-      console.error("Error submitting diagnosis:", error);
-    } finally {
-      setLoading(false);
+      console.error('Prediction failed:', error);
     }
-  };
-
-  const checkPatient = async () => {
-    setLoading(true);
-    try {
-      const patient = mockPatients[icNumber];
-      if (patient) {
-        setPatientDetails(patient);
-      } else {
-        alert("Patient not found");
-        setPatientDetails(null);
-      }
-    } catch (error) {
-      console.error("Error fetching patient details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePredictSurvival = () => {
-    const age = patientDetails?.age;
-    let mockSurvivalData;
-
-    if (age >= 40) {
-      mockSurvivalData = {
-        survivalRate: "50%",
-        prognosis:
-          "Follow rigorous treatment protocols and frequent monitoring.",
-      };
-    } else if (age >= 30) {
-      mockSurvivalData = {
-        survivalRate: "85%",
-        prognosis: "Follow treatment plan and regular check-ups.",
-      };
-    } else {
-      mockSurvivalData = {
-        survivalRate: "100%",
-        prognosis: "Maintain a healthy lifestyle and regular monitoring.",
-      };
-    }
-
-    setSurvivalPrediction(mockSurvivalData);
-  };
-
-  const handleTreatmentGuidance = () => {
-    const age = patientDetails?.age;
-    let mockTreatmentData;
-
-    if (age >= 40) {
-      mockTreatmentData = {
-        treatmentType: "Advanced Cancer Treatment Package by Hospital",
-        recommendedDrugs: ["Drug X", "Drug Y"],
-        treatmentDuration: "12 months",
-      };
-    } else if (age >= 30) {
-      mockTreatmentData = {
-        treatmentType: "Standard Treatment Package by Hospital",
-        recommendedDrugs: ["Drug A", "Drug B"],
-        treatmentDuration: "6 months",
-      };
-    } else {
-      mockTreatmentData = {
-        treatmentType: "Early Stage Plan Package by Hospital",
-        recommendedDrugs: [],
-        treatmentDuration: "Monitor regularly with lifestyle changes.",
-      };
-    }
-
-    setTreatmentGuidance(mockTreatmentData);
   };
 
   return (
-    <div className="diagnosis-container">
+    <div className="cancer-diagnosis-page">
       <Sidebar />
-      <div className="content">
-        <h1>Cancer Diagnosis</h1>
-        <form onSubmit={handleSubmit} className="diagnosis-form">
-          <div className="form-group">
-            <label>IC Number:</label>
-            <input
-              type="text"
-              value={icNumber}
-              onChange={(e) => setIcNumber(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              onClick={checkPatient}
-              className="check-button"
-            >
-              {loading ? "Checking..." : "Check"}
-            </button>
-          </div>
-          {patientDetails && (
-            <div className="patient-details">
-              <h3>Patient Details</h3>
-              <p>
-                <strong>Name:</strong> {patientDetails.full_name}
-              </p>
-              <p>
-                <strong>Age:</strong> {patientDetails.age}
-              </p>
-              <p>
-                <strong>Gender:</strong> {patientDetails.gender}
-              </p>
+      <div className="cancer-diagnosis-content">
+        <h2>Cancer Diagnosis</h2>
+
+        <div className="form-section">
+          <label>IC Number:</label>
+          <input
+            type="text"
+            value={ic}
+            onChange={(e) => setIc(e.target.value)}
+            className="form-input"
+          />
+          <button onClick={handleIcSearch} className="search-button">Search</button>
+
+          {icData && icData.fullName && (
+            <div className="patient-info">
+              <p><strong>IC:</strong> {icData.ic}</p>
+              <p><strong>Name:</strong> {icData.fullName}</p>
+              <p><strong>Age:</strong> {icData.age}</p>
+              <p><strong>Gender:</strong> {icData.gender}</p>
+              <p><strong>Height:</strong> {icData.height} cm</p>
+              <p><strong>Weight:</strong> {icData.weight} kg</p>
+              <p><strong>Blood Type:</strong> {icData.bloodType}</p>
+              <p><strong>Smoking:</strong> {icData.smoking}</p>
+              <p><strong>Alcohol:</strong> {icData.alcohol}</p>
             </div>
           )}
-          {patientDetails && (
-            <div>
-              <div className="form-group">
-                <label>Upload Scan:</label>
-                <input type="file" onChange={handleFileChange} required />
-              </div>
-              <button
-                type="submit"
-                className="submit-button"
-                disabled={loading}
-              >
-                {loading ? "Submitting..." : "Submit"}
-              </button>
-            </div>
+
+          {icData && icData.message && (
+            <p className="not-found-message">{icData.message}</p>
           )}
+        </div>
+
+
+        <div className="form-section">
+          <label>Select Cancer Type:</label>
+          <select value={selectedCancer} onChange={handleCancerChange} className="form-select">
+            <option value="">-- Select Cancer --</option>
+            <option value="Breast Cancer">Breast Cancer</option>
+            <option value="Lung Cancer">Lung Cancer</option>
+            <option value="Prostate Cancer">Prostate Cancer</option>
+            <option value="Colorectal Cancer">Colorectal Cancer</option>
+          </select>
+        </div>
+
+        <form onSubmit={handleSubmit} className="dynamic-form">
+          {renderCancerForm()}
+          {selectedCancer && <button type="submit" className="submit-button">Diagnose</button>}
         </form>
-
-        {result && (
-          <div className="result">
-            <h2>Diagnosis Results</h2>
-            <p>
-              <strong>Cancer Type:</strong> {result.cancerType}
-            </p>
-            <p>
-              <strong>Cancer Level:</strong> {result.cancerLevel}
-            </p>
-
-            <button
-              className="predict-survival-button"
-              onClick={handlePredictSurvival}
-            >
-              Predict Survival
-            </button>
-            <button
-              className="treatment-guidance-button"
-              onClick={handleTreatmentGuidance}
-            >
-              Treatment Guidance
-            </button>
-
-            {survivalPrediction && (
-              <div className="survival-prediction">
-                <h3>Survival Prediction</h3>
-                <p>
-                  <strong>Survival Rate:</strong>{" "}
-                  {survivalPrediction.survivalRate}
-                </p>
-                <p>
-                  <strong>Prognosis:</strong> {survivalPrediction.prognosis}
-                </p>
-              </div>
-            )}
-
-            {treatmentGuidance && (
-              <div className="treatment-guidance">
-                <h3>Treatment Guidance</h3>
-                <p>
-                  <strong>Treatment Type:</strong>{" "}
-                  {treatmentGuidance.treatmentType}
-                </p>
-                <p>
-                  <strong>Recommended Drugs:</strong>{" "}
-                  {treatmentGuidance.recommendedDrugs.join(", ")}
-                </p>
-                <p>
-                  <strong>Treatment Duration:</strong>{" "}
-                  {treatmentGuidance.treatmentDuration}
-                </p>
-              </div>
-            )}
-
-            {result && (
-              <button
-                className="view-report-button"
-                onClick={() =>
-                  navigate("/report", {
-                    state: {
-                      patientDetails,
-                      diagnosis: result,
-                      survivalPrediction,
-                      treatmentGuidance,
-                    },
-                  })
-                }
-              >
-                View Report
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );

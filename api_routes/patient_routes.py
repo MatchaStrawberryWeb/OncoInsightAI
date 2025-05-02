@@ -1,13 +1,17 @@
 from fastapi import APIRouter, HTTPException, Depends, Form
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+
 from database_model import database
 from database_model.patient_records import PatientRecord
 from database_model.medical_history import MedicalHistory
 from database_model.emergency_contact import EmergencyContact
+
 from schemas.patient_records import PatientRecordBase, PatientRecordResponse
-from schemas.medical_history import MedicalHistoryBase
-from schemas.emergency_contact import EmergencyContactBase
+from schemas.medical_history import MedicalHistoryBase, MedicalHistoryResponse
+from schemas.emergency_contact import EmergencyContactBase, EmergencyContactResponse
+
+router = APIRouter()
 
 # Dependency to get the database session
 def get_db():
@@ -17,10 +21,8 @@ def get_db():
     finally:
         db.close()
 
-router = APIRouter()
-
-# Route to create a patient record
-@router.post("/patients/")
+# ✅ Route to create a patient record
+@router.post("/patients/", response_model=PatientRecordResponse)
 async def create_patient(
     ic: str = Form(...),
     fullName: str = Form(...),
@@ -48,69 +50,77 @@ async def create_patient(
         db.add(patient_db)
         db.commit()
         db.refresh(patient_db)
-        return {"message": "Patient record created successfully", "id": patient_db.id}
+        return patient_db
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
-# Route to get a patient by IC number with the correct response model
-@router.get("/patients/{ic_number}", response_model=PatientRecordResponse)
-async def get_patient(ic: str, db: Session = Depends(get_db)):
-    patient = db.query(PatientRecord).filter(PatientRecord.ic == ic).first()
-    if patient is None:
+# ✅ Route to get patient details by IC
+@router.get("/patient/{ic_number}")
+async def get_patient(ic_number: str, db: Session = Depends(get_db)):
+    patient = db.query(PatientRecord).filter(PatientRecord.ic == ic_number).first()
+    if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
-    return patient
-
-# Route to create a medical history record for a patient
-@router.post("/patients/{ic_number}/medical_history/")
+    
+    return {
+        "ic": patient.ic,
+        "fullName": patient.fullName,
+        "age": patient.age,
+        "gender": patient.gender,
+        "height": patient.height,
+        "weight": patient.weight,
+        "bloodType": patient.bloodType,
+        "smoking": patient.smoking,
+        "alcohol": patient.alcohol,
+    }
+# ✅ Route to create a medical history record for a patient
+@router.post("/patients/{ic}/medical_history/", response_model=MedicalHistoryResponse)
 async def create_medical_history(ic: str, medical_history: MedicalHistoryBase, db: Session = Depends(get_db)):
     try:
         patient = db.query(PatientRecord).filter(PatientRecord.ic == ic).first()
         if patient is None:
             raise HTTPException(status_code=404, detail="Patient not found")
 
-        medical_history.ic = ic
-        db.add(medical_history)
+        new_history = MedicalHistory(**medical_history.dict(), ic=ic)
+        db.add(new_history)
         db.commit()
-        db.refresh(medical_history)
-        return medical_history
+        db.refresh(new_history)
+        return new_history
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
-# Route to get all medical history for a patient by IC number
-@router.get("/patients/{ic_number}/medical_history/")
+# ✅ Route to get all medical history entries for a patient
+@router.get("/patients/{ic}/medical_history/", response_model=list[MedicalHistoryResponse])
 async def get_medical_history(ic: str, db: Session = Depends(get_db)):
     patient = db.query(PatientRecord).filter(PatientRecord.ic == ic).first()
     if patient is None:
         raise HTTPException(status_code=404, detail="Patient not found")
     
-    medical_histories = db.query(MedicalHistory).filter(MedicalHistory.ic == ic).all()
-    return medical_histories
+    return db.query(MedicalHistory).filter(MedicalHistory.ic == ic).all()
 
-# Route to create an emergency contact for a patient
-@router.post("/patients/{ic_number}/emergency_contact/")
+# ✅ Route to create an emergency contact
+@router.post("/patients/{ic}/emergency_contact/", response_model=EmergencyContactResponse)
 async def create_emergency_contact(ic: str, emergency_contact: EmergencyContactBase, db: Session = Depends(get_db)):
     try:
         patient = db.query(PatientRecord).filter(PatientRecord.ic == ic).first()
         if patient is None:
             raise HTTPException(status_code=404, detail="Patient not found")
 
-        emergency_contact.ic = ic
-        db.add(emergency_contact)
+        new_contact = EmergencyContact(**emergency_contact.dict(), ic=ic)
+        db.add(new_contact)
         db.commit()
-        db.refresh(emergency_contact)
-        return emergency_contact
+        db.refresh(new_contact)
+        return new_contact
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
-# Route to get all emergency contacts for a patient by IC number
-@router.get("/patients/{ic_number}/emergency_contacts/")
+# ✅ Route to get all emergency contacts for a patient
+@router.get("/patients/{ic}/emergency_contacts/", response_model=list[EmergencyContactResponse])
 async def get_emergency_contacts(ic: str, db: Session = Depends(get_db)):
     patient = db.query(PatientRecord).filter(PatientRecord.ic == ic).first()
     if patient is None:
         raise HTTPException(status_code=404, detail="Patient not found")
 
-    emergency_contacts = db.query(EmergencyContact).filter(EmergencyContact.ic == ic).all()
-    return emergency_contacts
+    return db.query(EmergencyContact).filter(EmergencyContact.ic == ic).all()

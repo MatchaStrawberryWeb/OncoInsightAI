@@ -10,8 +10,8 @@ import os
 router = APIRouter()
 
 @router.post("/diagnose")
-async def diagnose(ic_number: str = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db)):
-    patient = db.query(PatientRecord).filter(PatientRecord.ic_number == ic_number).first()
+async def diagnose(ic: str = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db)):
+    patient = db.query(PatientRecord).filter(PatientRecord.ic == ic).first()
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
 

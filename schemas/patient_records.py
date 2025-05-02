@@ -7,26 +7,15 @@ class PatientRecordBase(BaseModel):
     fullName: str
     age: int
     gender: str
-    height: Optional[int] = None
-    weight: Optional[int] = None
+    height: Optional[float] = None
+    weight: Optional[float] = None
     bloodType: Optional[str] = None
     smoking: Optional[str] = None
     alcohol: Optional[str] = None
 
     class Config:
-        orm_mode = True  # This tells Pydantic to treat the SQLAlchemy model as a dict
+        orm_mode = True  # Enables compatibility with SQLAlchemy models
 
 # Pydantic model for returning patient details (response model)
-class PatientRecordResponse(BaseModel):
-    ic: str
-    fullName: str
-    age: int
-    gender: str
-    height: Optional[int] = None
-    weight: Optional[int] = None
-    bloodType: Optional[str] = None
-    smoking: Optional[str] = None
-    alcohol: Optional[str] = None
-
-    class Config:
-        orm_mode = True  # This tells Pydantic to treat the SQLAlchemy model as a dict
+class PatientRecordResponse(PatientRecordBase):
+    pass

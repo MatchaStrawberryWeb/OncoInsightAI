@@ -8,3 +8,12 @@ class MedicalHistoryBase(BaseModel):
 
     class Config:
         orm_mode = True
+
+# ✅ Add this to fix the import error
+class MedicalHistoryResponse(BaseModel):
+    id: int
+    ic: str
+    history_detail: Optional[str] = None
+
+    class Config:
+        orm_mode = True

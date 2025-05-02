@@ -122,7 +122,7 @@ const PatientRecords = () => {
       
         if (response.ok) {
           setSubmittedDetails({
-            ic_number: ic,
+            ic: ic,
             full_name: fullName,
             age,
             gender,
@@ -498,7 +498,7 @@ const PatientRecords = () => {
         submittedDetails && (
           <div className="submitted-details">
             <h3>Submitted Patient Details:</h3>
-            <p>IC Number: {submittedDetails.ic_number}</p>
+            <p>IC Number: {submittedDetails.ic}</p>
             <p>Full Name: {submittedDetails.full_name}</p>
             <p>Age: {submittedDetails.age}</p>
             <p>Gender: {submittedDetails.gender}</p>

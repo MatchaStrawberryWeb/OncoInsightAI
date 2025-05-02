@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from api_routes import auth_routes, users_routes, patient_routes, diagnosis
+from api_routes import auth_routes, users_routes, patient_routes, diagnosis, breast, lung, skin, colorectal, prostate
 from database_model import init_db
 import os
 import joblib
@@ -15,6 +15,11 @@ app.include_router(auth_routes.router, prefix="/api", tags=["auth"])
 app.include_router(users_routes.router, prefix="/api", tags=["users"])
 app.include_router(patient_routes.router, prefix="/api", tags=["patients"])
 app.include_router(diagnosis.router, prefix="/api", tags=["diagnosis"])
+app.include_router(breast.router, prefix="/predict_breast")
+app.include_router(lung.router, prefix="/predict_lung")
+app.include_router(skin.router, prefix="/predict_skin")
+app.include_router(colorectal.router, prefix="/predict_colorectal")
+app.include_router(prostate.router, prefix="/predict_prostate")
 
 # Session middleware
 app.add_middleware(
@@ -36,7 +41,7 @@ app.add_middleware(
 models = {
     "breast_cancer": joblib.load("trained_models/breast_cancer_model.pkl"),
     "colorectal_cancer": joblib.load("trained_models/colorectal_cancer_model.pkl"),
-    "dermatology": joblib.load("trained_models/dermatology_model.pkl"),
+    "dermatology": joblib.load("trained_models/skin_cancer_model.pkl"),
     "lung_cancer": joblib.load("trained_models/lung_cancer_model.pkl"),
     "prostate_cancer": joblib.load("trained_models/prostate_cancer_model.pkl"),
 }

@@ -1,170 +1,35 @@
-/* General container */
-.diagnosis-container {
+.cancer-diagnosis-page {
   display: flex;
-  min-height: 100vh;
 }
 
-.content {
+.cancer-diagnosis-content {
   flex: 1;
   padding: 20px;
-  background-color: #f9f9f9;
-  overflow-y: auto;
 }
 
-h1 {
-  font-size: 2rem;
-  color: #333;
+.form-section {
   margin-bottom: 20px;
 }
 
-/* Form and Input Styling */
-.diagnosis-form {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.form-group input {
+.form-input, .form-select {
   width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
+  padding: 8px;
+  margin-top: 8px;
+  margin-bottom: 12px;
 }
 
-button {
-  padding: 10px 20px;
-  background-color: #008080; /* Teal */
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #006666; /* Darker Teal for hover effect */
-}
-
-.check-button,
-.submit-button {
-  margin-top: 10px;
-}
-
-.check-button {
-  background-color: #008080; /* Green for the 'Check' button */
-}
-
-.check-button:hover {
-  background-color: #006666; /* Darker Green for hover effect */
-}
-
-/* Patient Details */
-.patient-details {
-  background-color: #f1f1f1;
-  padding: 15px;
-  border-radius: 5px;
-  margin-top: 20px;
-}
-
-.patient-details h3 {
-  margin-top: 0;
-}
-
-.patient-details p {
-  font-size: 1rem;
-  margin: 5px 0;
-}
-
-/* Result Section */
-.result {
-  margin-top: 30px;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.result h2 {
-  margin-top: 0;
-}
-
-.result p {
-  margin: 10px 0;
-}
-
-/* Survival Prediction & Treatment Guidance */
-.survival-prediction,
-.treatment-guidance {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f2f2f2;
-  border-radius: 5px;
-}
-
-.survival-prediction h3,
-.treatment-guidance h3 {
-  margin-top: 0;
-}
-
-.survival-prediction p,
-.treatment-guidance p {
-  margin: 5px 0;
-}
-
-.predict-survival-button,
-.treatment-guidance-button {
-  margin-top: 10px;
-  padding: 12px 25px;
+.search-button, .submit-button {
   background-color: #008080;
   color: white;
+  padding: 10px 15px;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  margin-top: 10px;
+  border-radius: 5px;
 }
 
-.predict-survival-button:hover,
-.treatment-guidance-button:hover {
-  background-color: #006666;
-}
-
-.loading {
-  font-size: 20px;
-  color: #008080; /* Teal color */
-  font-weight: bold;
-  margin-top: 20px;
-}
-
-.loading::after {
-  content: '...';
-  animation: dot-blink 1s infinite step-end;
-}
-
-@keyframes dot-blink {
-  0%, 20% {
-      content: '.';
-  }
-  40% {
-      content: '..';
-  }
-  60% {
-      content: '...';
-  }
-  80% {
-      content: '..';
-  }
-  100% {
-      content: '.';
-  }
+.patient-info {
+  background-color: #f0f0f0;
+  padding: 12px;
+  border-radius: 8px;
 }
