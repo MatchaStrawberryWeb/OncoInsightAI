@@ -8,7 +8,7 @@ class EmergencyContactBase(BaseModel):
     relation_to_patient: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # ✅ Add this to fix the import error
 class EmergencyContactResponse(BaseModel):
@@ -19,4 +19,4 @@ class EmergencyContactResponse(BaseModel):
     relation_to_patient: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True

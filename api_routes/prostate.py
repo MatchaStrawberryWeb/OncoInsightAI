@@ -17,13 +17,13 @@ class ProstateCancerInput(BaseModel):
     fractal_dimension: float
 
 # API endpoint
-@router.post("/predict_prostate")
+@router.post("/")
 def predict_prostate_cancer(input_data: ProstateCancerInput):
     try:
-        cancer_type, stage = predict(input_data.dict())
-        return {
-            "cancerType": cancer_type,
-            "cancerLevel": stage
-        }
+        result = predict(input_data.dict())  
+        print(f"Prediction: {result}")  # Optional: log full result
+        return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+

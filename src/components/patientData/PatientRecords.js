@@ -12,31 +12,32 @@ const PatientRecords = () => {
   const [formData, setFormData] = useState({
     height: "",
     weight: "",
-    bloodType: "",
+    blood_type: "",
     diabetes: "",
-    highBloodPressure: "",
-    heartDisease: "",
+    high_blood_pressure: "",
+    heart_disease: "",
     asthma: "",
     allergies: "",
     medications: "",
     surgeries: "",
-    familyHistory: "",
+    family_history: "",
     smoking: "",
     alcohol: "",
-    hearingRight: "",
-    hearingLeft: "",
-    eyesightRight: "",
-    eyesightLeft: "",
-    visualAidRight: "",
-    visualAidLeft: "",
-    colorVision: "",
+    hearing_right: "",
+    hearing_left: "",
+    eyesight_right: "",
+    eyesight_left: "",
+    visual_aid_right: "",
+    visual_aid_left: "",
+    color_vision: "",
     urinalysis: "",
     ecg: "",
     xray: "",
     emergency_contact_name: "",
     emergency_contact_number: "",
-    relationship_to_emergency_contact: ""
+    relationship_to_emergency_contacts: ""
   });
+
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -83,65 +84,89 @@ const PatientRecords = () => {
     }
 
     let bpLevel = "Normal";
-    if (formData.highBloodPressure) {
-      const val = parseFloat(formData.highBloodPressure);
+    if (formData.high_blood_pressure) {
+      const val = parseFloat(formData.high_blood_pressure);
       if (val < 90) bpLevel = "Low";
       else if (val > 140) bpLevel = "High";
     }
 
     const form = new FormData();
     form.append("ic", ic);
-    form.append("full_name", fullName);
+    form.append("fullName", fullName);
     form.append("age", age);
     form.append("gender", gender);
-    form.append("file", selectedFile);
+    form.append("uploaded_file", selectedFile);
 
     form.append("diabetes", `${formData.diabetes} (${diabetesLevel})`);
-    form.append("high_blood_pressure", `${formData.highBloodPressure} (${bpLevel})`);
+    form.append("high_blood_pressure", `${formData.high_blood_pressure} (${bpLevel})`);
+
+    form.append("contact_name", formData.contact_name);
+    form.append("contact_number", formData.contact_number);
+    form.append("relation_to_patient", formData.relation_to_patient);
+
 
     // Append remaining fields (if any others exist in formData)
     for (const [key, value] of Object.entries(formData)) {
-      if (key !== "diabetes" && key !== "highBloodPressure") {
+      if (
+        key !== "diabetes" &&
+        key !== "high_blood_pressure" &&
+        key !== "emergency_contact_name" &&
+        key !== "emergency_contact_number" &&
+        key !== "relationship_to_emergency_contacts"
+      ) {
         form.append(key, value);
       }
     }
 
+    try {
+      const response = await fetch("http://localhost:8000/api/patients/", {
+        method: "POST",
+        body: form
+      });
+
+      let data;
       try {
-        const response = await fetch("http://localhost:8000/api/patients/", {
-          method: "POST",
-          body: form
+        data = await response.json();
+      } catch {
+        const text = await response.text();
+        data = { detail: text };
+      }
+
+      if (response.ok) {
+        setSubmittedDetails({
+          ic: ic,
+          full_name: fullName,
+          age,
+          gender,
+          file_name: selectedFile?.name || "No file uploaded",
+          ...formData,
+          diabetes: `${formData.diabetes} (${diabetesLevel})`,
+          high_blood_pressure: `${formData.high_blood_pressure} (${bpLevel})`
         });
-      
-        let data;
-        try {
-          data = await response.json();
-        } catch {
-          const text = await response.text();
-          data = { detail: text };
-        }
-      
-        if (response.ok) {
-          setSubmittedDetails({
-            ic: ic,
-            full_name: fullName,
-            age,
-            gender,
-            file_name: selectedFile?.name || "No file uploaded",
-            ...formData,
-            diabetes: `${formData.diabetes} (${diabetesLevel})`,
-            highBloodPressure: `${formData.highBloodPressure} (${bpLevel})`
+        setSuccessMessage(data.message || "Patient data and file uploaded successfully!");
+        setErrorMessage([]);  // clear previous error messages
+      } else {
+        let messages = ["Failed to upload patient data."];
+
+        if (Array.isArray(data.detail)) {
+          messages = data.detail.map(e => {
+            const field = Array.isArray(e.loc) ? e.loc.at(-1) : "field";
+            return `${field}: ${e.msg}`;
           });
-          setSuccessMessage(data.message || "Patient data and file uploaded successfully!");
-          setErrorMessage("");
-        } else {
-          setErrorMessage(data.detail || "Failed to upload patient data.");
-          setSuccessMessage("");
+        } else if (typeof data.detail === "object" && data.detail !== null) {
+          messages = [data.detail.msg || JSON.stringify(data.detail)];
+        } else if (typeof data.detail === "string") {
+          messages = [data.detail];
         }
-      } catch (error) {
-        setErrorMessage("An error occurred while uploading patient data.");
+
+        setErrorMessage(messages);
         setSuccessMessage("");
       }
-    };
+    } catch (error) {
+      setErrorMessage(["An error occurred while uploading patient data."]);
+      setSuccessMessage("");
+    }
+  }
 
   return (
     <div className="patient-records">
@@ -257,12 +282,13 @@ const PatientRecords = () => {
               <label>High Blood Pressure (Systolic - mmHg):</label>
               <input
                 type="number"
-                name="highBloodPressure"
-                value={formData.highBloodPressure}
+                name="high_blood_pressure"
+                value={formData.high_blood_pressure}
                 onChange={handleChange}
                 placeholder="e.g. 120"
               />
             </div>
+
             <div className="form-group">
               <label>Allergies:</label>
               <input
@@ -270,7 +296,7 @@ const PatientRecords = () => {
                 name="allergies"
                 value={formData.allergies}
                 onChange={handleChange}
-                placeholder="e.g., Penicillin, Peanuts"
+                placeholder="e.g., Seafoods, Peanuts"
               />
             </div>
 
@@ -278,12 +304,13 @@ const PatientRecords = () => {
               <label>Heart Disease:</label>
               <input
                 type="text"
-                name="heartDisease"
-                value={formData.heartDisease}
+                name="heart_disease"
+                value={formData.heart_disease}
                 onChange={handleChange}
                 placeholder="e.g., Coronary artery disease"
               />
             </div>
+
             <div className="form-group">
               <label>Surgeries:</label>
               <input
@@ -305,12 +332,13 @@ const PatientRecords = () => {
                 placeholder="e.g., Mild intermittent asthma"
               />
             </div>
+
             <div className="form-group">
               <label>Family History:</label>
               <input
                 type="text"
-                name="familyHistory"
-                value={formData.familyHistory}
+                name="family_history"
+                value={formData.family_history}
                 onChange={handleChange}
                 placeholder="e.g., Father had diabetes"
               />
@@ -340,20 +368,21 @@ const PatientRecords = () => {
                 </select>
               </div>
             </div>
-
-            {/* Vision & Hearing */}
-            <div>
+                
+             {/* Vision & Hearing */}
+             <div>
               <h3 className="section-title">Vision & Hearing</h3>
-
               <div className="form-group">
                 <label>Hearing:</label>
                 <div className="grid grid-cols-2 gap-2">
-                  <select name="hearingRight" value={formData.hearingRight} onChange={handleChange}>
+                  <select name="hearing_right" value={formData.hearing_right} onChange={handleChange}>
+                    <option value="">Right</option>
                     <option value="Normal">Normal</option>
                     <option value="Impaired">Impaired</option>
                     <option value="Deaf">Deaf</option>
                   </select>
-                  <select name="hearingLeft" value={formData.hearingLeft} onChange={handleChange}>
+                  <select name="hearing_left" value={formData.hearing_left} onChange={handleChange}>
+                    <option value="">Left</option>
                     <option value="Normal">Normal</option>
                     <option value="Impaired">Impaired</option>
                     <option value="Deaf">Deaf</option>
@@ -364,12 +393,14 @@ const PatientRecords = () => {
               <div className="form-group">
                 <label>Eyesight:</label>
                 <div className="grid grid-cols-2 gap-2">
-                  <select name="eyesightRight" value={formData.eyesightRight} onChange={handleChange}>
+                  <select name="eyesight_right" value={formData.eyesight_right} onChange={handleChange}>
+                    <option value="">Right</option>
                     <option value="Normal">Normal</option>
                     <option value="Impaired">Impaired</option>
                     <option value="Blind">Blind</option>
                   </select>
-                  <select name="eyesightLeft" value={formData.eyesightLeft} onChange={handleChange}>
+                  <select name="eyesight_left" value={formData.eyesight_left} onChange={handleChange}>
+                    <option value="">Left</option>
                     <option value="Normal">Normal</option>
                     <option value="Impaired">Impaired</option>
                     <option value="Blind">Blind</option>
@@ -380,12 +411,14 @@ const PatientRecords = () => {
               <div className="form-group">
                 <label>Eyesight (with visual aids):</label>
                 <div className="grid grid-cols-2 gap-2">
-                  <select name="visualAidRight" value={formData.visualAidRight} onChange={handleChange}>
+                  <select name="visual_aid_right" value={formData.visual_aid_right} onChange={handleChange}>
+                    <option value="">Right</option>
                     <option value="Normal">Normal</option>
                     <option value="Impaired">Impaired</option>
                     <option value="Blind">Blind</option>
                   </select>
-                  <select name="visualAidLeft" value={formData.visualAidLeft} onChange={handleChange}>
+                  <select name="visual_aid_left" value={formData.visual_aid_left} onChange={handleChange}>
+                    <option value="">Left</option>
                     <option value="Normal">Normal</option>
                     <option value="Impaired">Impaired</option>
                     <option value="Blind">Blind</option>
@@ -395,10 +428,17 @@ const PatientRecords = () => {
 
               <div className="form-group">
                 <label>Color Vision:</label>
-                <input type="text" name="colorVision" value={formData.colorVision} onChange={handleChange} placeholder="e.g., Normal" />
+                <input
+                  type="text"
+                  name="color_vision"
+                  value={formData.color_vision}
+                  onChange={handleChange}
+                  placeholder="e.g., Normal"
+                />
               </div>
             </div>
-          </div>
+            </div>
+          
 
           <div className="grid grid-cols-2 gap-4 mt-6">
             {/* Lab & Diagnostic Results */}
@@ -464,8 +504,8 @@ const PatientRecords = () => {
                   <label>Relationship:</label>
                   <input
                     type="text"
-                    name="relationship_to_emergency_contact"
-                    value={formData.relationship_to_emergency_contact}
+                    name="relation_to_patient"
+                    value={formData.relation_to_patient}
                     onChange={handleChange}
                     placeholder="e.g., Spouse"
                   />
@@ -499,7 +539,7 @@ const PatientRecords = () => {
           <div className="submitted-details">
             <h3>Submitted Patient Details:</h3>
             <p>IC Number: {submittedDetails.ic}</p>
-            <p>Full Name: {submittedDetails.full_name}</p>
+            <p>Full Name: {submittedDetails.fullName}</p>
             <p>Age: {submittedDetails.age}</p>
             <p>Gender: {submittedDetails.gender}</p>
             <p>File Uploaded: {submittedDetails.file_name}</p>

@@ -1,27 +1,42 @@
 import joblib
 import pandas as pd
 
-# Load the trained model
-model = joblib.load("trained_models/prostate_cancer_model.pkl")
+# Load both models
+diagnosis_model = joblib.load("trained_models/prostate_cancer_model.pkl")
 
-# Prediction function with optional staging
+
 def predict(data: dict):
     df = pd.DataFrame([data])
-    prediction = model.predict(df)[0]
+    
+    # Diagnosis
+    prediction = diagnosis_model.predict(df)[0]
+    prob = None
+    if hasattr(diagnosis_model, "predict_proba"):
+        prob = float(diagnosis_model.predict_proba(df)[0][1])
 
-    # Optional: staging based on class probability
-    if hasattr(model, "predict_proba"):
-        prob = model.predict_proba(df)[0][1]  # probability of Malignant
-        if prob > 0.90:
-            stage = "Stage 4"
-        elif prob > 0.75:
-            stage = "Stage 3"
-        elif prob > 0.60:
-            stage = "Stage 2"
+        if prob > 0.5:
+            cancer_type = "Malignant"
+            if prob > 0.90:
+                stage = "Stage 4"
+            elif prob > 0.75:
+                stage = "Stage 3"
+            elif prob > 0.60:
+                stage = "Stage 2"
+            else:
+                stage = "Stage 1"
         else:
-            stage = "Stage 1"
+            cancer_type = "Benign"
+            stage = "None"
     else:
-        stage = "Stage 1" if prediction == 1 else "No Stage"
+        if prediction == 1:
+            cancer_type = "Malignant"
+            stage = "Stage 1"
+        else:
+            cancer_type = "Benign"
+            stage = "None"
 
-    cancer_type = "Malignant" if prediction == 1 else "Benign"
-    return cancer_type, stage
+    return {
+        "cancerType": cancer_type,
+        "cancerStage": stage,
+        "probability": prob
+    }

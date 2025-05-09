@@ -11,7 +11,7 @@ SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root@localhost/oncoinsight"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 # Create a session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine,  expire_on_commit=False)
 
 # Base class for models
 Base = declarative_base()

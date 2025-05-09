@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import '../css/CancerDiagnosis.css';
 import Sidebar from './Sidebar';
+import CancerResultChart from './CancerResultChart';
+
 
 const CancerDiagnosis = () => {
   const [selectedCancer, setSelectedCancer] = useState('');
@@ -8,13 +10,14 @@ const CancerDiagnosis = () => {
   const [icData, setIcData] = useState({});
   const [ic, setIc] = useState('');
 
+
   const handleIcSearch = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/patient/${ic}`);
+      const response = await fetch(`http://localhost:8000/api/patients/${ic}/full_details/`);
       const data = await response.json();
       setIcData(data);
     } catch (error) {
-      console.error("Failed to fetch patient data:", error);
+      console.error("Failed to fetch full patient data:", error);
     }
   };
 
@@ -27,6 +30,9 @@ const CancerDiagnosis = () => {
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: parseFloat(e.target.value) });
   };
+
+  const [predictionResult, setPredictionResult] = useState(null);
+
 
   const renderCancerForm = () => {
     const commonProps = {
@@ -178,16 +184,16 @@ const CancerDiagnosis = () => {
     }
   };
 
+  const endpointMap = {
+    'Breast Cancer': '/predict_breast',
+    'Lung Cancer': '/predict_lung',
+    'Prostate Cancer': '/predict_prostate',
+    'Colorectal Cancer': '/predict_colorectal',
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const endpointMap = {
-      'Breast Cancer': '/predict_breast',
-      'Lung Cancer': '/predict_lung',
-      'Prostate Cancer': '/predict_prostate',
-      'Colorectal Cancer': '/predict_colorectal'
-    };
-
     try {
       const response = await fetch(`http://localhost:8000${endpointMap[selectedCancer]}`, {
         method: 'POST',
@@ -197,10 +203,12 @@ const CancerDiagnosis = () => {
 
       const result = await response.json();
       console.log('Prediction result:', result);
+      setPredictionResult(result);
     } catch (error) {
       console.error('Prediction failed:', error);
     }
   };
+
 
   return (
     <div className="cancer-diagnosis-page">
@@ -218,25 +226,50 @@ const CancerDiagnosis = () => {
           />
           <button onClick={handleIcSearch} className="search-button">Search</button>
 
-          {icData && icData.fullName && (
-            <div className="patient-info">
-              <p><strong>IC:</strong> {icData.ic}</p>
-              <p><strong>Name:</strong> {icData.fullName}</p>
-              <p><strong>Age:</strong> {icData.age}</p>
-              <p><strong>Gender:</strong> {icData.gender}</p>
-              <p><strong>Height:</strong> {icData.height} cm</p>
-              <p><strong>Weight:</strong> {icData.weight} kg</p>
-              <p><strong>Blood Type:</strong> {icData.bloodType}</p>
-              <p><strong>Smoking:</strong> {icData.smoking}</p>
-              <p><strong>Alcohol:</strong> {icData.alcohol}</p>
+          {icData && icData.patient_records && (
+            <div>
+              <h2>Patient Record</h2>
+              <p><strong>IC:</strong> {icData.patient_records.ic}</p>
+              <p><strong>Name:</strong> {icData.patient_records.fullName}</p>
+              <p><strong>Age:</strong> {icData.patient_records.age}</p>
+              <p><strong>Gender:</strong> {icData.patient_records.gender}</p>
+              <p><strong>Height:</strong> {icData.patient_records.height} cm</p>
+              <p><strong>Weight:</strong> {icData.patient_records.weight} kg</p>
+              <p><strong>Blood Type:</strong> {icData.patient_records.bloodType}</p>
+              <p><strong>Smoking:</strong> {icData.patient_records.smoking}</p>
+              <p><strong>Alcohol:</strong> {icData.patient_records.alcohol}</p>
+
+              <h2>Medical History</h2>
+              {icData.medical_history.length === 0 ? (
+                <p>No medical history found.</p>
+              ) : (
+                icData.medical_history.map((record, index) => (
+                  <div key={index} style={{ border: '1px solid #ccc', margin: '10px 0', padding: '10px' }}>
+                    <p><strong>Date:</strong> {record.date_recorded}</p>
+                    <p><strong>Diabetes:</strong> {record.diabetes}</p>
+                    <p><strong>High Blood Pressure:</strong> {record.high_blood_pressure}</p>
+                    <p><strong>Heart Disease:</strong> {record.heart_disease}</p>
+                    <p><strong>Asthma:</strong> {record.asthma}</p>
+                    <p><strong>Medications:</strong> {record.medications}</p>
+                    <p><strong>Allergies:</strong> {record.allergies}</p>
+                    <p><strong>Surgeries:</strong> {record.surgeries}</p>
+                    <p><strong>Family History:</strong> {record.family_history}</p>
+                    <p><strong>Eyesight (Right/Left):</strong> {record.eyesight_right} / {record.eyesight_left}</p>
+                    <p><strong>Visual Aid (Right/Left):</strong> {record.visual_aid_right} / {record.visual_aid_left}</p>
+                    <p><strong>Hearing (Right/Left):</strong> {record.hearing_right} / {record.hearing_left}</p>
+                    <p><strong>Color Vision:</strong> {record.color_vision}</p>
+                    <p><strong>Urinalysis:</strong> {record.urinalysis}</p>
+                    <p><strong>ECG:</strong> {record.ecg}</p>
+                    <p><strong>X-Ray:</strong> {record.xray}</p>
+                  </div>
+                ))
+              )}
             </div>
           )}
-
           {icData && icData.message && (
             <p className="not-found-message">{icData.message}</p>
           )}
         </div>
-
 
         <div className="form-section">
           <label>Select Cancer Type:</label>
@@ -251,8 +284,33 @@ const CancerDiagnosis = () => {
 
         <form onSubmit={handleSubmit} className="dynamic-form">
           {renderCancerForm()}
+
+          <div className="form-section">
+            <label>Upload Report / Scan Files:</label>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => console.log("Files uploaded:", e.target.files)}
+              className="form-input"
+            />
+            <small>You can upload multiple files (PDF, JPG, PNG, etc.).</small>
+          </div>
           {selectedCancer && <button type="submit" className="submit-button">Diagnose</button>}
+
         </form>
+
+        {predictionResult && (
+          <>
+            <h3>Diagnosis Result</h3>
+            <p><strong>Cancer Type:</strong> {predictionResult.cancerType}</p>
+            <p><strong>Cancer Stage:</strong> {predictionResult.cancerStage || "None"}</p>
+
+            {predictionResult.probability && (
+              <CancerResultChart probability={predictionResult.probability} />
+            )}
+
+          </>
+        )}
       </div>
     </div>
   );

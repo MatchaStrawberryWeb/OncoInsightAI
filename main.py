@@ -21,6 +21,7 @@ app.include_router(skin.router, prefix="/predict_skin")
 app.include_router(colorectal.router, prefix="/predict_colorectal")
 app.include_router(prostate.router, prefix="/predict_prostate")
 
+
 # Session middleware
 app.add_middleware(
     SessionMiddleware,

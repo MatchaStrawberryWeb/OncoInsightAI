@@ -33,3 +33,27 @@
   padding: 12px;
   border-radius: 8px;
 }
+
+.predictionResult {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e0f7f7;
+  border: 2px solid #008080;
+  border-radius: 10px;
+}
+.predictionResult h3 {
+  color: #008080;
+}
+
+.form-section input[type="file"] {
+  margin-top: 8px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+}
+
+small {
+  display: block;
+  color: #666;
+  margin-top: 5px;
+}

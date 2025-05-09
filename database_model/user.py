@@ -28,7 +28,7 @@ class UserProfile(BaseModel):
     department: str | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Hash a password
 def hash_password(password: str) -> str:
