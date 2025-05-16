@@ -100,8 +100,8 @@ const PatientRecords = () => {
     form.append("diabetes", `${formData.diabetes} (${diabetesLevel})`);
     form.append("high_blood_pressure", `${formData.high_blood_pressure} (${bpLevel})`);
 
-    form.append("contact_name", formData.contact_name);
-    form.append("contact_number", formData.contact_number);
+    form.append("contact_name", formData.emergency_contact_name);
+    form.append("contact_number", formData.emergency_contact_number);
     form.append("relation_to_patient", formData.relation_to_patient);
 
 
@@ -368,9 +368,9 @@ const PatientRecords = () => {
                 </select>
               </div>
             </div>
-                
-             {/* Vision & Hearing */}
-             <div>
+
+            {/* Vision & Hearing */}
+            <div>
               <h3 className="section-title">Vision & Hearing</h3>
               <div className="form-group">
                 <label>Hearing:</label>
@@ -437,8 +437,8 @@ const PatientRecords = () => {
                 />
               </div>
             </div>
-            </div>
-          
+          </div>
+
 
           <div className="grid grid-cols-2 gap-4 mt-6">
             {/* Lab & Diagnostic Results */}
@@ -545,7 +545,9 @@ const PatientRecords = () => {
             <p>File Uploaded: {submittedDetails.file_name}</p>
             <h4>Medical Details:</h4>
             {Object.entries(formData).map(([key, value]) => (
-              <p key={key}>{key.replace(/([A-Z])/g, " $1")}: {value}</p>
+              <p key={key}>
+                <span>{key.replace(/([A-Z])/g, " $1")}:</span> {value}
+              </p>
             ))}
           </div>
         )

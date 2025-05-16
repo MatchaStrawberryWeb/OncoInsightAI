@@ -1,19 +1,15 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from model.lung_model import predict
-
-
-import pandas as pd
-import joblib
+from model.lung_model import predict  # ✅ Import your model logic
+import traceback
 
 router = APIRouter()
 
-# Load the trained lung cancer model
-model = joblib.load("trained_models/lung_cancer_model.pkl")
-
-# Define the input schema
 class LungCancerInput(BaseModel):
+    GENDER: int
+    AGE: int
     SMOKING: int
+    ALCOHOL_CONSUMING: int
     YELLOW_FINGERS: int
     ANXIETY: int
     PEER_PRESSURE: int
@@ -21,16 +17,21 @@ class LungCancerInput(BaseModel):
     FATIGUE: int
     ALLERGY: int
     WHEEZING: int
-    ALCOHOL_CONSUMING: int
     COUGHING: int
     SHORTNESS_OF_BREATH: int
     SWALLOWING_DIFFICULTY: int
     CHEST_PAIN: int
 
-@router.post("/predict_lung")
-def predict_lung(data: LungCancerInput):
-    df = pd.DataFrame([data.dict()])
-    prediction = model.predict(df)[0]
-    diagnosis = "Positive" if prediction == 1 else "Negative"
-    return {"prediction": diagnosis}
+@router.post("/")
+def predict_lung_cancer(input_data: LungCancerInput):
+    try:
+        data_dict = input_data.dict()
 
+        # Call the actual prediction logic from lung_model.py
+        result = predict(data_dict)
+
+        return result
+
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))

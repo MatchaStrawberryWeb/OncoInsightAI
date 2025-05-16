@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/Sidebar.css';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-import { 
-    FaTachometerAlt, 
-    FaStethoscope, 
-    FaFileAlt, 
-    FaUser, 
-    FaHeartbeat, 
-    FaQuestionCircle, 
-    FaBars, 
-    FaCaretDown, 
+import {
+    FaTachometerAlt,
+    FaStethoscope,
+    FaFileAlt,
+    FaUser,
+    FaHeartbeat,
+    FaQuestionCircle,
+    FaBars,
+    FaCaretDown,
     FaCaretUp,
     FaSignOutAlt
 } from 'react-icons/fa';
@@ -18,6 +18,29 @@ import {
 const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(true); // Sidebar starts collapsed
     const [patientDataCollapsed, setPatientDataCollapsed] = useState(true); // Patient Data submenu starts collapsed
+    const [dateTime, setDateTime] = useState("");
+
+    useEffect(() => {
+        const updateTime = () => {
+            const malaysiaTime = new Date().toLocaleString("en-MY", {
+                timeZone: "Asia/Kuala_Lumpur",
+                weekday: "short",
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false,
+            });
+            setDateTime(malaysiaTime);
+        };
+
+        updateTime(); // initial call
+        const intervalId = setInterval(updateTime, 1000); // update every second
+
+        return () => clearInterval(intervalId); // cleanup on unmount
+    }, []);
 
     const toggleSidebar = () => {
         setCollapsed(!collapsed); // Toggle collapse state of the sidebar
@@ -33,7 +56,7 @@ const Sidebar = () => {
         alert("You have been logged out.");
         window.location.href = "/login"; // Redirect to login page
     };
-    
+
 
     return (
         <>
@@ -72,13 +95,13 @@ const Sidebar = () => {
                             {!collapsed && <span>Cancer Diagnosis</span>}
                         </Link>
                         {!collapsed && (
-                           <ul className="submenu">
-                           <li><Link to="/breast-cancer">Breast Cancer</Link></li>
-                           <li><Link to="/lung-cancer">Lung Cancer</Link></li>
-                           <li><Link to="/prostate-cancer">Prostate Cancer</Link></li>
-                           <li><Link to="/skin-cancer">Skin Cancer</Link></li>
-                           <li><Link to="/colorectal-cancer">Colorectal Cancer</Link></li>
-                       </ul>
+                            <ul className="submenu">
+                                <li><Link to="/breast-cancer">Breast Cancer</Link></li>
+                                <li><Link to="/lung-cancer">Lung Cancer</Link></li>
+                                <li><Link to="/prostate-cancer">Prostate Cancer</Link></li>
+                                <li><Link to="/skin-cancer">Skin Cancer</Link></li>
+                                <li><Link to="/colorectal-cancer">Colorectal Cancer</Link></li>
+                            </ul>
                         )}
                     </li>
 
@@ -91,8 +114,10 @@ const Sidebar = () => {
                 </ul>
             </div>
 
-           {/* Top-Right Links */}
+            {/* Top-Right Links */}
             <div className="top-right-links">
+                <div className="malaysia-time">{dateTime}</div>
+
                 <Link to="/profile">
                     <FaUser className="menu-icon" /> Profile
                 </Link>

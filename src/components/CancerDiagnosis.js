@@ -6,10 +6,26 @@ import CancerResultChart from './CancerResultChart';
 
 const CancerDiagnosis = () => {
   const [selectedCancer, setSelectedCancer] = useState('');
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    GENDER: '',
+    AGE: '',
+    SMOKING: '',
+    ALCOHOL_CONSUMING: '',
+    YELLOW_FINGERS: '',
+    ANXIETY: '',
+    PEER_PRESSURE: '',
+    CHRONIC_DISEASE: '',
+    FATIGUE: '',
+    ALLERGY: '',
+    WHEEZING: '',
+    COUGHING: '',
+    SHORTNESS_OF_BREATH: '',
+    SWALLOWING_DIFFICULTY: '',
+    CHEST_PAIN: '',
+  });
+
   const [icData, setIcData] = useState({});
   const [ic, setIc] = useState('');
-
 
   const handleIcSearch = async () => {
     try {
@@ -33,6 +49,11 @@ const CancerDiagnosis = () => {
 
   const [predictionResult, setPredictionResult] = useState(null);
 
+  const lungFields = [
+    "GENDER","AGE","SMOKING", "ALCOHOL_CONSUMING", "YELLOW_FINGERS", "ANXIETY", "PEER_PRESSURE", "CHRONIC_DISEASE",
+    "FATIGUE", "ALLERGY", "WHEEZING", "COUGHING", "SHORTNESS_OF_BREATH",
+    "SWALLOWING_DIFFICULTY", "CHEST_PAIN"
+  ];
 
   const renderCancerForm = () => {
     const commonProps = {
@@ -89,6 +110,52 @@ const CancerDiagnosis = () => {
               {...commonProps}
             />
           </div>
+          <div>
+            <label>Compactness Mean</label>
+            <input
+              name="compactness_mean"
+              placeholder="e.g. 0.15"
+              step="0.01"
+              {...commonProps}
+            />
+          </div>
+          <div>
+            <label>Concavity Mean</label>
+            <input
+              name="concavity_mean"
+              placeholder="e.g. 0.12"
+              step="0.01"
+              {...commonProps}
+            />
+          </div>
+          <div>
+            <label>Concave Points Mean</label>
+            <input
+              name="concave_points_mean"
+              placeholder="e.g. 0.06"
+              step="0.01"
+              {...commonProps}
+            />
+          </div>
+          <div>
+            <label>Symmetry Mean</label>
+            <input
+              name="symmetry_mean"
+              placeholder="e.g. 0.18"
+              step="0.01"
+              {...commonProps}
+            />
+          </div>
+          <div>
+            <label>Fractal Dimension Mean</label>
+            <input
+              name="fractal_dimension_mean"
+              placeholder="e.g. 0.06"
+              step="0.01"
+              {...commonProps}
+            />
+          </div>
+
         </>
       );
     }
@@ -134,7 +201,7 @@ const CancerDiagnosis = () => {
       return (
         <>
           {[...Array(10)].map((_, i) => (
-            <div key={i}>
+            <div key={i} className="form-group">
               <label>{`Selected Gene Feature ${i + 1}`}</label>
               <input
                 name={`gene_feature_${i + 1}`}
@@ -146,43 +213,79 @@ const CancerDiagnosis = () => {
           ))}
         </>
       );
-
     } else if (selectedCancer === 'Lung Cancer') {
-      const lungFields = [
-        "SMOKING", "YELLOW_FINGERS", "ANXIETY", "PEER_PRESSURE", "CHRONIC_DISEASE",
-        "FATIGUE", "ALLERGY", "WHEEZING", "ALCOHOL_CONSUMING", "COUGHING",
-        "SHORTNESS_OF_BREATH", "SWALLOWING_DIFFICULTY", "CHEST_PAIN"
-      ];
+  return (
+    <div className="lung-cancer-form-grid">
+      
+      {/* Render AGE field */}
+      <div className="form-group">
+        <label>1. Age</label>
+        <input
+          type="number"
+          name="AGE"
+          placeholder="e.g. 45"
+          value={formData.AGE}
+          onChange={handleInputChange}
+          className="form-input"
+        />
+      </div>
 
-      return (
-        <>
-          {lungFields.map((field) => (
-            <div key={field} className="form-group">
-              <label>{field.replace(/_/g, ' ')}</label>
-              <div>
-                <label>
-                  <input
-                    type="radio"
-                    name={field}
-                    value={1}
-                    onChange={handleInputChange}
-                  /> Yes
-                </label>
-                <label style={{ marginLeft: '15px' }}>
-                  <input
-                    type="radio"
-                    name={field}
-                    value={0}
-                    onChange={handleInputChange}
-                  /> No
-                </label>
-              </div>
+      {/* Render GENDER field */}
+      <div className="form-group">
+        <label>2. Gender</label>
+        <select
+          name="GENDER"
+          value={formData.GENDER}
+          onChange={handleInputChange}
+          className="form-input"
+        >
+          <option value="">--Select--</option>
+          <option value="1">Male</option>
+          <option value="0">Female</option>
+        </select>
+      </div>
+
+      {/* Render the rest of the lung fields except AGE and GENDER */}
+      {lungFields
+        .filter(field => field !== 'AGE' && field !== 'GENDER')
+        .map((field, index) => (
+          <div key={field} className="form-group">
+            <label>
+              {`${index + 3}. ${field.replace(/_/g, ' ')}`}
+            </label>
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  name={field}
+                  value={1}
+                  checked={formData[field] === 1}
+                  onChange={() =>
+                    setFormData({ ...formData, [field]: 1 })
+                  }
+                />{' '}
+                Yes
+              </label>{' '}
+              <label>
+                <input
+                  type="radio"
+                  name={field}
+                  value={0}
+                  checked={formData[field] === 0}
+                  onChange={() =>
+                    setFormData({ ...formData, [field]: 0 })
+                  }
+                />{' '}
+                No
+              </label>
             </div>
-          ))}
-        </>
-      );
-    }
-  };
+          </div>
+        ))}
+    </div>
+  );
+}
+
+  }
 
   const endpointMap = {
     'Breast Cancer': '/predict_breast',

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from model.breast_model import predict  # Ensure your import path is correct
+from model.breast_model import predict  # Import from model folder
 
 router = APIRouter()
 
+# Input schema
 class BreastCancerInput(BaseModel):
     radius_mean: float
     texture_mean: float
@@ -16,12 +17,12 @@ class BreastCancerInput(BaseModel):
     symmetry_mean: float
     fractal_dimension_mean: float
 
-@router.post("/predict")  # Define a valid path for the route
+# API endpoint
+@router.post("/")
 def predict_breast_cancer(input_data: BreastCancerInput):
     try:
-        # Call the predict function and pass the input data
-        cancer_type, stage = predict(input_data.dict())
-        return {"cancerType": cancer_type, "cancerLevel": stage}
+        result = predict(input_data.dict())
+        print(f"Prediction: {result}")  # Optional logging
+        return result
     except Exception as e:
-        # Handle any exceptions and return a 400 error if needed
-        raise HTTPException(status_code=400, detail=f"Error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
