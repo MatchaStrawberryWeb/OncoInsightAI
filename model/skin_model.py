@@ -1,19 +1,36 @@
-import joblib
-from PIL import Image
+import tensorflow as tf
 import numpy as np
+from tensorflow.keras.utils import load_img, img_to_array
 
-model = joblib.load("trained_models/skin_cancer_model.pkl")
+# Load the trained skin cancer model once
+model = tf.keras.models.load_model("trained_models/skin_cancer_model.h5")
 
-def preprocess_image(image_url: str):
-    # Here, you would load and preprocess the image
-    img = Image.open(image_url)
-    img = img.resize((224, 224))  # Example resize for input model size
-    img_array = np.array(img) / 255.0  # Normalize the image
-    return np.expand_dims(img_array, axis=0)  # Expand dims for batch size of 1
+def predict_skin_cancer(image_path: str):
+    # Load and preprocess image
+    img = load_img(image_path, target_size=(224, 224))
+    img_array = img_to_array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
 
-def predict(data: dict):
-    image_data = preprocess_image(data["image_url"])
-    prediction = model.predict(image_data)[0]
-    cancer_type = "Malignant" if prediction == 1 else "Benign"
-    stage = "Stage 1"  # Assume logic for staging
-    return cancer_type, stage
+    # Model prediction (probability for Malignant class)
+    prob = float(model.predict(img_array)[0][0])
+
+    # Determine cancer type and stage
+    if prob >= 0.5:
+        cancer_type = "Malignant"
+        if prob > 0.90:
+            stage = "Stage 4"
+        elif prob > 0.75:
+            stage = "Stage 3"
+        elif prob > 0.60:
+            stage = "Stage 2"
+        else:
+            stage = "Stage 1"
+    else:
+        cancer_type = "Benign"
+        stage = "None"
+
+    return {
+        "cancerType": cancer_type,
+        "cancerStage": stage,
+        "probability": prob
+    }

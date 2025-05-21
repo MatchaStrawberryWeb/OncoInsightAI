@@ -28,6 +28,7 @@ def get_db():
 def init_db():
     # Local import to avoid circular import issues
     from .user import User
+    from .save_report import PatientReport
     Base.metadata.create_all(bind=engine)  # Create all tables, including User
 
 # database_model/database.py

@@ -1,19 +1,33 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from model.colorectal_model import predict
+from typing import List
+from model.colorectal_model import predict_colorectal_cancer
 
 router = APIRouter()
 
 class ColorectalCancerInput(BaseModel):
-    age: float
-    family_history: int
-    diet: str  # e.g. "High-fat", "Vegetarian", etc.
-    physical_activity: int  # 0 or 1 for sedentary or active
+    gene_features: List[float]
 
-@router.post("")
-def predict_colorectal_cancer(input_data: ColorectalCancerInput):
+@router.post("/")
+def predict_colorectal(input_data: ColorectalCancerInput):
     try:
-        cancer_type, stage = predict(input_data.dict())
-        return {"cancerType": cancer_type, "cancerLevel": stage}
-    except Exception as e:
+        result = predict_colorectal_cancer(input_data.gene_features)
+
+        malignant_prob = result["probability_of_recurrence"]
+        benign_prob = round(1 - malignant_prob, 4)
+
+        chart_data = [
+            {"label": "Malignant", "value": malignant_prob},
+            {"label": "Benign", "value": benign_prob}
+        ]
+
+        return {
+            "prediction": result["prediction"],
+            "probability": malignant_prob,  # use malignant prob as the main probability
+            "cancerType": result["cancer_type"],
+            "cancerStage": result["cancer_stage"],
+            "chart": chart_data
+        }
+
+    except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

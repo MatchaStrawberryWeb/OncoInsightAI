@@ -43,7 +43,7 @@ def predict(data: dict):
         prob = float(diagnosis_model.predict_proba(df)[0][1])
 
     # Final decision logic
-    if prediction == 1 or (prob is not None and prob > 0.5):
+    if prediction == 1 or (prob is not None and prob > 0.5) or yes_count >= 8:
         cancer_type = "Lung Cancer"
         # Rule-based staging
         if yes_count == 13:
@@ -55,7 +55,7 @@ def predict(data: dict):
         elif 8 <= yes_count <= 9:
             stage = "Stage 1"
         else:
-            stage = "Stage 1"  # Mild symptoms but model says "yes"
+            stage = "Stage 1"  # fallback
     else:
         cancer_type = "No Lung Cancer"
         stage = "None"

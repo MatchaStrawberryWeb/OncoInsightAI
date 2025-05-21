@@ -18,7 +18,7 @@
   margin-bottom: 12px;
 }
 
-.search-button, .submit-button {
+.search-button, .submit-button, .survival-prediction-btn {
   background-color: #008080;
   color: white;
   padding: 10px 15px;
@@ -34,16 +34,19 @@
   border-radius: 8px;
 }
 
-.predictionResult {
+.result-container {
   margin-top: 20px;
   padding: 15px;
   background-color: #e0f7f7;
   border: 2px solid #008080;
   border-radius: 10px;
 }
-.predictionResult h3 {
+
+.result-container h3,
+.result-container h4 {
   color: #008080;
 }
+
 
 .form-section input[type="file"] {
   margin-top: 8px;
@@ -70,7 +73,7 @@ small {
 }
 
 label {
-  font-size: 16px;
+  font-size: 22px;
   font-weight: bold;
   margin-bottom: 8px;
 }

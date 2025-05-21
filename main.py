@@ -2,10 +2,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from api_routes import auth_routes, users_routes, patient_routes, diagnosis, breast, lung, skin, colorectal, prostate
+from api_routes import auth_routes, survival, treatment, save_report, users_routes, patient_routes, diagnosis, breast, lung, skin, colorectal, prostate
 from database_model import init_db
 import os
 import joblib
+import tensorflow as tf
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -20,7 +21,9 @@ app.include_router(lung.router, prefix="/predict_lung")
 app.include_router(skin.router, prefix="/predict_skin")
 app.include_router(colorectal.router, prefix="/predict_colorectal")
 app.include_router(prostate.router, prefix="/predict_prostate")
-
+app.include_router(survival.router, prefix="/predict_survival")
+app.include_router(treatment.router, prefix="/treatment")
+app.include_router(save_report.router, prefix="/save_report")
 
 # Session middleware
 app.add_middleware(
@@ -42,7 +45,7 @@ app.add_middleware(
 models = {
     "breast_cancer": joblib.load("trained_models/breast_cancer_model.pkl"),
     "colorectal_cancer": joblib.load("trained_models/colorectal_cancer_model.pkl"),
-    "dermatology": joblib.load("trained_models/skin_cancer_model.pkl"),
+    "skin_cancer": tf.keras.models.load_model("trained_models/skin_cancer_model.h5"),
     "lung_cancer": joblib.load("trained_models/lung_cancer_model.pkl"),
     "prostate_cancer": joblib.load("trained_models/prostate_cancer_model.pkl"),
 }
