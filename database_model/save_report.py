@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, String, Text
+from datetime import datetime
+from sqlalchemy import TIMESTAMP, Column, Integer, String, Text
 from database_model.database import Base
 
-class PatientReport(Base):
+
+class PatientDetailedReport(Base):
     __tablename__ = "patient_reports"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -12,3 +14,7 @@ class PatientReport(Base):
     diagnosis = Column(Text, nullable=False)
     survival = Column(Text, nullable=False)
     treatment = Column(Text, nullable=False)
+    doctor_note = Column(Text, nullable=True) 
+    doctor_signature = Column(String(100), nullable=True)  
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    

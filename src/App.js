@@ -13,7 +13,7 @@ import CancerDiagnosis from "./components/CancerDiagnosis";
 import Protected from "./components/Protected"; // Correct path for Protected component
 import PatientRecords from "./components/patientData/PatientRecords"; // Updated path
 import MedicalRecords from "./components/patientData/MedicalRecords";
-import Report from "./components/Report";
+import DetailedReport from "./components/DetailedReport";
 import AdminActivityLogs from "./components/AdminActivityLogs";
 import Profile from "./components/Profile";
 import Help from "./components/Help";
@@ -60,7 +60,7 @@ const App = () => {
           path="/patient-data/medical-records"
           element={<MedicalRecords />}
         />
-        <Route path="/report" element={<Report />} />
+        <Route path="/detailed-report" element={<DetailedReport />} />
 
         <Route path="/breast-cancer" element={<BreastCancer />} />
         <Route path="/lung-cancer" element={<LungCancer />} />

@@ -1,6 +1,7 @@
 {
     "python.analysis.extraPaths": [
         "./backend",
-        "./src/components/patientData"
+        "./src/components/patientData",
+        "./database_model"
     ]
 }

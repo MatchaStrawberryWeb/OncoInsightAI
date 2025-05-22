@@ -424,7 +424,7 @@ const CancerDiagnosis = () => {
         return;
       }
 
-      setSurvivalPredictionResult(result); // ✅ Store result
+      setSurvivalPredictionResult(result); //Store result
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to get survival prediction: ' + error.message);
@@ -458,6 +458,8 @@ const CancerDiagnosis = () => {
     }
   }, [cancerType, cancerStage, survivalPredictionResult]);
 
+  const [successMessage, setSuccessMessage] = useState('');
+
   const handleSaveAndDownload = async () => {
     try {
       const reportData = {
@@ -468,7 +470,22 @@ const CancerDiagnosis = () => {
         diagnosis: predictionResult,
         survival: survivalPredictionResult,
         treatment: treatmentPlan,
+        doctorNote,
+        doctorSignature,
       };
+
+      // Send report data to backend to save in DB
+      const response = await fetch("http://localhost:8000/save_report/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reportData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save report");
+      }
 
       const today = new Date().toLocaleDateString();
 
@@ -540,12 +557,14 @@ const CancerDiagnosis = () => {
       doc.text(`Doctor In Charge: ${doctorSignature}`, 14, 224 + noteHeight + 10);
 
       doc.save(`Cancer_Report_${reportData.ic}.pdf`);
+
+      setSuccessMessage('Report saved and downloaded successfully!');
     } catch (err) {
       console.error(err);
-      alert("Failed to generate report.");
+      setSuccessMessage('');
+      alert("Failed to save report.");
     }
   };
-
 
   return (
     <div className="cancer-diagnosis-page">
@@ -780,11 +799,15 @@ const CancerDiagnosis = () => {
             <div className="treatment-actions" style={{ marginTop: '15px' }}>
               <button onClick={handleSaveAndDownload}>Save and Download Report</button>
             </div>
+
+            {/* Success message below the button */}
+            {successMessage && (
+              <p style={{ color: 'green', marginTop: '10px' }}>{successMessage}</p>
+            )}
           </div>
         )}
-
       </div>
-    </div>
+    </div >
   );
 };
 
