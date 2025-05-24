@@ -21,13 +21,13 @@
 /* Headings */
 .whats-new-heading {
   font-size: 2.5rem;
-  color: #008080;
+  color: #931f3a;
 }
 
 .updates-heading {
   font-size: 2rem;
   margin-bottom: 1px;
-  color: #005757;
+  color: #b35067;
   padding-left: 50px;
 }
 
@@ -61,7 +61,7 @@
 }
 
 .updates-list li strong {
-  color: #008080;
+  color: #931f3a;
 }
 
 /* Call to Action Section */
@@ -75,7 +75,7 @@
 .cta-section h2 {
   font-size: 1.8rem;
   margin-bottom: 15px;
-  color: #005757;
+  color: #b35067;
 }
 
 .cta-section p {
@@ -85,7 +85,7 @@
 }
 
 .cta-button {
-  background-color: #008080;
+  background-color: #931f3a;
   color: #ffffff;
   border: none;
   padding: 10px 20px;
@@ -96,7 +96,7 @@
 }
 
 .cta-button:hover {
-  background-color: #005757;
+  background-color: #b35067;
 }
 
 .news-icon {

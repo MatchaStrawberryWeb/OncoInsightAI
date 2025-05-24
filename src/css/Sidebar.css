@@ -2,7 +2,7 @@
 .sidebar {
   width: 250px;
   height: 100vh;
-  background-color: #008080;
+  background-color: #931f3a;
   color: white;
   display: flex;
   flex-direction: column;
@@ -91,7 +91,7 @@
 }
 
 .submenu li a:hover {
-  color: #005757;
+  color: #b35067;
 }
 
 /* Top-right links styles */
@@ -110,13 +110,13 @@
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-  color: #008080;
+  color: #931f3a;
   text-decoration: none;
   font-size: 16px; /* Standardized font size for top-right links */
 }
 
 .top-right-links a:hover {
-  color: #005757;
+  color: #b35067;
 }
 
 /* Specific font size for "Patient Data" in collapsed sidebar */

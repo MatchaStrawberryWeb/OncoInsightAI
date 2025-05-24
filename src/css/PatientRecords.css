@@ -20,7 +20,7 @@
 }
 
 .patient-records-content h2 {
-  color: #008080;
+  color: #333333;
   font-family: 'Roboto', sans-serif;
 }
 
@@ -85,7 +85,7 @@
 }
 
 h3.section-title {
-  color: #008080;
+  color: #931f3a;
   text-align: center;
 }
 
@@ -135,7 +135,7 @@ select {
 }
 
 .submitted-details h3 {
-  color: #006666;
+  color: #b35067;
   border-bottom: 1px solid #00cccc;
   padding-bottom: 6px;
   margin-top: 10px;

@@ -12,6 +12,18 @@ function AdminDashboard() {
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
 
+    const logActivity = async (userId, activityType, details) => {
+        try {
+            await axios.post('http://localhost:8000/admin/activity-log', {
+                user_id: userId,
+                activity_type: activityType,
+                details: details,
+            });
+        } catch (error) {
+            console.error('Activity log failed:', error);
+        }
+    };
+
     // Define handleEditUser function
     const handleEditUser = (user) => {
         setEditingUser(user);
@@ -47,7 +59,9 @@ function AdminDashboard() {
             if (response.status === 200 || response.status === 201) {
                 setNewUser({ username: '', password: '' });
                 fetchUsers();
+                await logActivity('Add User', `Added user ${newUser.username}`);
                 alert('User added successfully');
+
             } else {
                 setError('Failed to add user');
             }
@@ -62,11 +76,14 @@ function AdminDashboard() {
     // Handle deleting a user
     const handleDeleteUser = async (userId) => {
         setLoading(true);
+        const currentUserId = localStorage.getItem('user_id'); // Get logged-in user ID
+
         try {
             const response = await axios.delete(`http://localhost:8000/admin/users/${userId}`);
             if (response.status === 200) {
                 setUsers(users.filter(user => user.id !== userId));
                 setError('');
+                await logActivity(parseInt(currentUserId), 'Delete User', `Deleted user ID ${userId}`);
                 alert('User deleted successfully');
             } else {
                 setError('Failed to delete user');
@@ -78,6 +95,7 @@ function AdminDashboard() {
             setLoading(false);
         }
     };
+
 
     // Handle updating user details
     const handleUpdateUser = async () => {
@@ -91,6 +109,8 @@ function AdminDashboard() {
             if (response.status === 200) {
                 setEditingUser(null);
                 fetchUsers();
+                await logActivity('Edit User', `Updated user ${editingUser.username}`);
+
             } else {
                 setError('Failed to update user');
             }
@@ -114,10 +134,9 @@ function AdminDashboard() {
         : users;
 
     // Handle logout
-    const handleLogout = () => {
-        // Perform the logout operation (like clearing session or redirecting)
+    const handleLogout = async () => {
         alert("Logging out...");
-        // You can redirect to the login page or clear session/cookies
+        await logActivity('Logout', 'Admin logged out');
         window.location.href = "/login";
     };
 

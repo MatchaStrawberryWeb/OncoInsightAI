@@ -20,7 +20,7 @@
   
   .login-form h2 {
     font-size: 2rem;
-    color: #008080; /* Teal color */
+    color: #931f3a; 
     margin-bottom: 20px;
   }
   
@@ -44,7 +44,7 @@
   }
   
   .form-group input:focus {
-    border-color: #008080; /* Teal border on focus */
+    border-color: #931f3a; /* Teal border on focus */
   }
   
   .error-message {
@@ -56,7 +56,7 @@
 
   
   .login-btn {
-    background: #008080; /* Teal background */
+    background: #931f3a; /* Teal background */
     color: white;
     padding: 10px 20px;
     font-size: 1.1rem;
@@ -68,7 +68,7 @@
   }
   
   .login-btn:hover {
-    background: #005757; /* Darker teal on hover */
+    background: #b35067; /* Darker teal on hover */
   }
   
   .signup-link {
@@ -81,7 +81,7 @@
   }
   
   .signup-link a {
-    color: #008080;
+    color: #931f3a;
     text-decoration: none;
   }
   

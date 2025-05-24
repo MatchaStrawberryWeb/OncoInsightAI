@@ -19,7 +19,7 @@
 }
 
 .search-button, .submit-button, .survival-prediction-btn {
-  background-color: #008080;
+  background-color: #931f3a;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -38,13 +38,13 @@
   margin-top: 20px;
   padding: 15px;
   background-color: #e0f7f7;
-  border: 2px solid #008080;
+  border: 2px solid #931f3a;
   border-radius: 10px;
 }
 
 .result-container h3,
 .result-container h4 {
-  color: #008080;
+  color: #931f3a;
 }
 
 

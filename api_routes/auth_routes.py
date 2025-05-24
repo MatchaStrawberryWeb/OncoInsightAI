@@ -4,6 +4,8 @@ from api_routes.users_routes import LoginRequest
 from database_model import User
 from database_model.user import verify_password, hash_password
 from database_model import get_db
+from database_model.activity_log import UserActivityLog
+from datetime import datetime
 
 router = APIRouter()
 
@@ -16,11 +18,39 @@ async def login(login_request: LoginRequest, request: Request, db: Session = Dep
     if not verify_password(login_request.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
-    # Store user in session
-    request.session["user"] = user.username  # Ensure this value is stored as a string
-    print("Session data:", request.session)  # Debug: Print session data
+    # Store username in session
+    request.session["user"] = user.username
 
-    return {"message": "Login successful", "username": user.username}
+    # Log login activity
+    log = UserActivityLog(
+        user_id=user.id,
+        activity_type="login",
+        details=f"User {user.username} logged in at {datetime.now().isoformat()}"
+    )
+    db.add(log)
+    db.commit()
+
+    return {"access_token": user.username}
+
+@router.post("/logout")
+async def logout(request: Request, db: Session = Depends(get_db)):
+    username = request.session.get("user")
+    if not username:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # ✅ Log logout activity
+    log = UserActivityLog(
+    user_id=user.id,
+    activity_type="logout",
+    details=f"User {user.username} logged out at {datetime.now().isoformat()}"
+)
+    db.add(log)
+    db.commit()
+
 
 # Profile Route
 @router.get("/profile")

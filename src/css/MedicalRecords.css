@@ -5,7 +5,7 @@
 
 .sidebar {
   width: 250px;
-  background-color: #008080;
+  background-color: #931f3a;
   color: white;
   padding: 20px;
   height: 100vh;
@@ -28,7 +28,7 @@
 }
 
 .sidebar ul li:hover {
-  background-color: #006666;
+  background-color: #b35067;
   padding-left: 10px;
 }
 
@@ -40,7 +40,7 @@
 
 .main-content h2,
 .main-content h3 {
-  color: #008080;
+  color: #333333;
   font-family: 'Roboto', sans-serif;
 }
 
@@ -69,7 +69,7 @@ table th, table td {
 /* Button styles */
 button {
   padding: 8px 14px;
-  background-color: #008080;
+  background-color: #931f3a;
   color: white;
   border: none;
   border-radius: 5px;
@@ -78,7 +78,7 @@ button {
 }
 
 button:hover {
-  background-color: #006666;
+  background-color: #b35067;
 }
 
 button.delete-btn {
@@ -112,7 +112,7 @@ input[type="file"] {
 
 textarea:focus,
 input:focus {
-  border-color: #008080;
+  border-color: #931f3a;
   outline: none;
   box-shadow: 0 0 5px rgba(0, 128, 128, 0.3);
 }

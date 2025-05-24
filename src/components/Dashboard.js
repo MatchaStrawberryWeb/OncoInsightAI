@@ -31,7 +31,7 @@ const Dashboard = () => {
       <Sidebar />
       <div style={{ marginLeft: '50px', padding: '10px', flex: 1 }}>
         {/* Display the username */}
-        <h1 style={{ color: 'teal' }}>Welcome back, {username || 'User'} 👋</h1>
+        <h1 style={{ color: '#333333' }}>Welcome back, {username || 'User'} 👋</h1>
         <p>Here's the latest update from the last 7 days. Check now.</p>
         <div className="stats-container">
           <div className="stat-card">

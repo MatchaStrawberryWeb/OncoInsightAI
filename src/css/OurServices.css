@@ -4,10 +4,10 @@
   --section-bg: #ffffff; /* White for sections */
   --primary-text: #333333; /* Dark text */
   --secondary-text: #555555; /* Lighter text */
-  --button-bg: #00796b; /* Teal for buttons */
-  --button-hover-bg: #004d40; /* Darker teal for hover */
+  --button-bg: #b35067; /* Teal for buttons */
+  --button-hover-bg: #b35067; /* Darker teal for hover */
   --feature-bg: #e0f2f1; /* Light teal background for features */
-  --footer-bg: #004d40; /* Footer background */
+  --footer-bg: #b35067; /* Footer background */
   --footer-text: #ffffff; /* Footer text color */
   --card-shadow: rgba(0, 0, 0, 0.1); /* Shadow for cards */
   --font-family: 'Roboto', sans-serif;
@@ -51,7 +51,7 @@ p {
 
 .intro-heading {
   font-size: 2.5rem;
-  color: #008080;
+  color: #931f3a;
 }
 
 .intro-text {
@@ -84,7 +84,7 @@ p {
 
 .features-heading {
   font-size: 2.5rem;
-  color: #005757;
+  color: #b35067;
   margin-bottom: 20px;
 }
 
@@ -118,7 +118,7 @@ p {
 .feature-card h3 {
   font-size: 1.5rem;
   margin-bottom: 10px;
-  color: #008080;
+  color: #931f3a;
 }
 
 .feature-card p {
@@ -139,7 +139,7 @@ p {
   text-align: center;
   font-size: 2.5rem;
   margin-bottom: 20px;
-  color: #005757;
+  color: #b35067;
 }
 
 .insights-list {
@@ -148,7 +148,7 @@ p {
 }
 
 .insights-list li strong {
-  color: #008080;
+  color: #931f3a;
 }
 
 .insights-list li {

@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from api_routes import auth_routes, detailed_report, survival, treatment, save_report, users_routes, patient_routes, diagnosis, breast, lung, skin, colorectal, prostate
+from api_routes import auth_routes, detailed_report, survival, treatment, save_report, users_routes, patient_routes, diagnosis, breast, lung, skin, colorectal, prostate, admin
 from database_model import init_db
 import os
 import joblib
@@ -25,6 +25,7 @@ app.include_router(survival.router, prefix="/predict_survival")
 app.include_router(treatment.router, prefix="/treatment")
 app.include_router(save_report.router, prefix="/save_report")
 app.include_router(detailed_report.router, prefix="/detailed_report")
+app.include_router(admin.router)
 
 # Session middleware
 app.add_middleware(

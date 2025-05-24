@@ -4,7 +4,7 @@
 
 .sidebar {
   width: 250px;
-  background-color: #008080;
+  background-color: #931f3a;
   color: white;
   padding: 20px;
   height: 100vh;
@@ -17,7 +17,7 @@
 }
 
 .main-content h2 {
-  color: #008080;
+  color: #931f3a;
   font-family: 'Roboto', sans-serif;
   margin-bottom: 20px;
 }
@@ -44,7 +44,7 @@
 }
 
 .report-table th {
-  background-color: #008080;
+  background-color: #4a5568;
   color: white;
 }
 

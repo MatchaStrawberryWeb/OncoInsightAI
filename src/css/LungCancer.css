@@ -9,7 +9,7 @@
   }
   
   h1, h2 {
-    color: #008080;
+    color: #333333;
   }
   
   .doctor-hierarchy,
@@ -34,7 +34,7 @@
     content: "•";
     position: absolute;
     left: 0;
-    color: #008080;
+    color: #931f3a;
   }
   
   .upload-documents form {
@@ -58,7 +58,7 @@
   }
   
   .upload-documents button {
-    background-color: #008080;
+    background-color: #931f3a;
     color: white;
     border: none;
     padding: 10px;
@@ -67,7 +67,7 @@
   }
   
   .upload-documents button:hover {
-    background-color: #005757;
+    background-color: #b35067;
   }
   
   .forum-section {
@@ -89,7 +89,7 @@
   }
   
   .create-forum button {
-    background-color: #008080;
+    background-color: #931f3a;
     color: white;
     border: none;
     padding: 10px;
@@ -98,7 +98,7 @@
   }
   
   .create-forum button:hover {
-    background-color: #005757;
+    background-color: #b35067;
   }
   
   .forums {
@@ -115,6 +115,6 @@
   
   .forums h3 {
     margin: 0;
-    color: #008080;
+    color: #931f3a;
   }
   
