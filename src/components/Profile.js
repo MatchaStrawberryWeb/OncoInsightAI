@@ -6,27 +6,20 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem("token");
-  
-      if (!token || token === "undefined") {
-        setError("User is not logged in or token is missing.");
-        return;
-      }
-  
       try {
-        const response = await fetch("http://127.0.0.1:8000/profile", {
+        const response = await fetch("http://127.0.0.1:8000/api/profile", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
+          credentials: "include",  // <-- IMPORTANT: send session cookie
         });
-  
+
         if (!response.ok) {
           const errorDetails = await response.json();
           throw new Error(errorDetails.detail || "Failed to fetch profile data.");
         }
-  
+
         const data = await response.json();
         setProfile(data);
       } catch (err) {
@@ -34,10 +27,9 @@ const Profile = () => {
         setError("Error fetching profile data. Please try again.");
       }
     };
-  
+
     fetchProfile();
   }, []);
-  
 
   if (error) {
     return <div className="error-message">{error}</div>;

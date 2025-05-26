@@ -169,8 +169,8 @@ const MedicalRecords = () => {
                   <td>{p.age}</td>
                   <td>{p.gender}</td>
                   <td>
-                    <button onClick={() => handleEdit(p)}>Edit</button>{' '}
-                    <button onClick={() => handleDelete(p.ic)}>Delete</button>
+                    <button className="edit-btn" onClick={() => handleEdit(p)}>Edit</button>{' '}
+                    <button className="delete-btn" onClick={() => handleDelete(p.ic)}>Delete</button>
                   </td>
                 </tr>
               ))}

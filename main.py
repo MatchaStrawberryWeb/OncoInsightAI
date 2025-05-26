@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from api_routes import auth_routes, detailed_report, survival, treatment, save_report, users_routes, patient_routes, diagnosis, breast, lung, skin, colorectal, prostate, admin
+from api_routes import auth_routes, detailed_report, survival, treatment, save_report, users_routes, patient_routes, diagnosis, breast, lung, skin, colorectal, prostate, admin, forum
 from database_model import init_db
 import os
 import joblib
@@ -26,18 +26,25 @@ app.include_router(treatment.router, prefix="/treatment")
 app.include_router(save_report.router, prefix="/save_report")
 app.include_router(detailed_report.router, prefix="/detailed_report")
 app.include_router(admin.router)
+app.include_router(forum.router, prefix="/api/forum")
+
 
 # Session middleware
 app.add_middleware(
     SessionMiddleware,
-    secret_key="e314e9499c99afce6a8b858a197e10f736722ddcd9ed577e9442bf2a35d3158b",
+    secret_key="your_secret_key_here",
     session_cookie="onco_session",
+    https_only=False,  # Allow cookie over HTTP (localhost)
 )
+
 
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

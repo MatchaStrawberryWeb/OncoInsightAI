@@ -11,29 +11,29 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
+class UserProfile(BaseModel):
+    fullName: str
+    username: str
+    department: str
+    createdAt: str
+
 # Login Route
 @router.post("/login")
 async def login(login_request: LoginRequest, request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == login_request.username).first()
-    if not user:
+    if not user or not verify_password(login_request.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    if not verify_password(login_request.password, user.password_hash):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-
-    # Store user in session
+    
+    # Save username in session
     request.session["user"] = user.username
-    print("Session after login:", request.session)  # Debugging session content
-
     return {"message": "Login successful", "username": user.username}
 
-
-# Profile Route
 @router.get("/profile")
-async def get_profile(request: Request, db: Session = Depends(get_db)):
+async def profile(request: Request, db: Session = Depends(get_db)):
     username = request.session.get("user")
     if not username:
         raise HTTPException(status_code=401, detail="User not authenticated")
-
+    
     user = db.query(User).filter(User.username == username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")

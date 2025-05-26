@@ -12,12 +12,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!username || !password) {
       setError("Both fields are required.");
       return;
     }
-  
+
     console.log("Logging in with username:", username);
     try {
       const response = await fetch('http://localhost:8000/api/login', {
@@ -25,18 +25,31 @@ const Login = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
-  
+
       const data = await response.json();
       console.log("Login response:", data);
-  
+
       if (response.ok) {
-        // Save the token and username to localStorage
-        localStorage.setItem('token', data.access_token);
-        localStorage.setItem('username', username);  // Save the username
-        localStorage.setItem('isLoggedIn', true);    // Added: Set login status
+        // access_token contains username
+        const loggedInUsername = data.access_token;
+
+        // Derive role from username
+        let role = null;
+        if (loggedInUsername.startsWith('doctor')) {
+          role = 'doctor';
+        } else if (loggedInUsername.startsWith('nurse')) {
+          role = 'nurse';
+        } else if (loggedInUsername === 'admin') {
+          role = 'admin';
+        }
+
+        localStorage.setItem('token', loggedInUsername);  
+        localStorage.setItem("userRole", role);
+        localStorage.setItem('username', loggedInUsername);  
+        localStorage.setItem('isLoggedIn', true);    
 
         // Display success message and redirect
-        if (username === "admin") {
+        if (role === "admin") {
           setMessage("Admin login successful! Redirecting...");
           setTimeout(() => {
             navigate("/admin-dashboard");
@@ -47,7 +60,7 @@ const Login = () => {
             navigate("/dashboard");
           }, 1500);
         }
-  
+
         setError("");  // Clear any previous error messages
       } else {
         setError(data.detail || "Invalid credentials. Please contact the admin.");

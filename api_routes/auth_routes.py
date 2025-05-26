@@ -18,8 +18,17 @@ async def login(login_request: LoginRequest, request: Request, db: Session = Dep
     if not verify_password(login_request.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
-    # Store username in session
+    # Determine role from username
+    if user.username.startswith("doctor"):
+        role = "doctor"
+    elif user.username.startswith("nurse"):
+        role = "nurse"
+    else:
+        role = "unknown"
+
+    # Store in session
     request.session["user"] = user.username
+    request.session["role"] = role
 
     # Log login activity
     log = UserActivityLog(
@@ -30,7 +39,11 @@ async def login(login_request: LoginRequest, request: Request, db: Session = Dep
     db.add(log)
     db.commit()
 
-    return {"access_token": user.username}
+    return {
+        "access_token": user.username,
+        "role": role  
+    }
+
 
 @router.post("/logout")
 async def logout(request: Request, db: Session = Depends(get_db)):

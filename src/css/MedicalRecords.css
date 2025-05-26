@@ -81,12 +81,33 @@ button:hover {
   background-color: #b35067;
 }
 
-button.delete-btn {
-  background-color: #cc0000;
+/* Action Buttons */
+.edit-btn, .delete-btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: background-color 0.3s ease;
 }
 
-button.delete-btn:hover {
-  background-color: #990000;
+.edit-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #45a049;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
 }
 
 button.save-btn {
