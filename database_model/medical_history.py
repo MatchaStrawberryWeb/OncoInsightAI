@@ -11,7 +11,8 @@ class MedicalHistory(Base):
 
     date_recorded = Column(DateTime, nullable=True, server_default=func.now())
     diabetes = Column(String, nullable=True)
-    high_blood_pressure = Column(String, nullable=True)
+    systolic = Column(Integer, nullable=True)
+    diastolic = Column(Integer, nullable=True)
     heart_disease = Column(Text, nullable=True)
     asthma = Column(Text, nullable=True)
     medications = Column(Text, nullable=True)

@@ -7,7 +7,8 @@ class MedicalHistoryResponse(BaseModel):
     ic: str
     date_recorded: datetime
     diabetes: Optional[str] = None
-    high_blood_pressure: Optional[str] = None
+    systolic: Optional[int] = None
+    diastolic: Optional[int] = None
     heart_disease: Optional[str] = None
     asthma: Optional[str] = None
     medications: Optional[str] = None

@@ -23,7 +23,8 @@ class MedicalHistoryResponse(BaseModel):
     ic: str
     date_recorded: datetime
     diabetes: Optional[str]
-    high_blood_pressure: Optional[str]
+    systolic: Optional[int]
+    diastolic: Optional[int]
     heart_disease: Optional[str]
     asthma: Optional[str]
     medications: Optional[str]
@@ -78,7 +79,8 @@ class UpdatePatientRequest(BaseModel):
 
     # medical history
     diabetes: Optional[str]
-    high_blood_pressure: Optional[str]
+    systolic: Optional[str]
+    diastolic: Optional[str]
     heart_disease: Optional[str]
     asthma: Optional[str]
     medications: Optional[str]

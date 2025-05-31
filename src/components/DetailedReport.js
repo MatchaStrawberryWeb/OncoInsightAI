@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
-import "../css/DetailedReport.css";
-import Sidebar from './Sidebar';
+import Sidebar from "./Sidebar";
+import "../css/DetailedReport.css"; // Assuming you have a CSS file for styling
 
 const DetailedReport = () => {
     const [reports, setReports] = useState([]);
     const [filteredReports, setFilteredReports] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchIc, setSearchIc] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const reportsPerPage = 5;
+    const [selectedCancerType, setSelectedCancerType] = useState("All");
+    const [selectedStage, setSelectedStage] = useState("All");
+
 
     useEffect(() => {
         axios.get("http://localhost:8000/detailed_report/")
             .then((response) => {
+                console.log("Fetched reports:", response.data); // 👈 add this
                 setReports(response.data);
                 setFilteredReports(response.data);
                 setLoading(false);
@@ -24,17 +29,53 @@ const DetailedReport = () => {
             });
     }, []);
 
+
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchIc(value);
-        if (value.trim() === "") {
-            setFilteredReports(reports);
-        } else {
-            const filtered = reports.filter(report =>
-                report.ic.toLowerCase().includes(value.toLowerCase())
+        setCurrentPage(1);
+        filterReports(value, selectedCancerType, selectedStage);
+    };
+
+    const filterReports = (ic, cancerType, stage) => {
+        let filtered = reports;
+
+        if (ic.trim() !== "") {
+            filtered = filtered.filter((report) =>
+                report.ic.toLowerCase().includes(ic.toLowerCase())
             );
-            setFilteredReports(filtered);
         }
+
+        if (cancerType !== "All") {
+            filtered = filtered.filter((report) =>
+                report.cancer_type.toLowerCase().includes(cancerType.toLowerCase())
+            );
+        }
+
+        if (stage !== "All") {
+            const selectedStageNum = parseInt(stage); // convert to number
+            filtered = filtered.filter((report) =>
+                Number(report.cancer_stage) === selectedStageNum
+            );
+        }
+
+        setFilteredReports(filtered);
+    };
+
+
+    const handleStageChange = (e) => {
+        const value = e.target.value;
+        setSelectedStage(value);
+        setCurrentPage(1);
+        filterReports(searchIc, selectedCancerType, value);
+    };
+
+
+    const handleCancerTypeChange = (e) => {
+        const value = e.target.value;
+        setSelectedCancerType(value);
+        setCurrentPage(1);
+        filterReports(searchIc, value, selectedStage);
     };
 
     const formatDiagnosis = (diag) => {
@@ -94,113 +135,122 @@ const DetailedReport = () => {
         doc.setFontSize(14);
         doc.text("Recommended Treatment", 14, 140);
         doc.setFontSize(12);
-        doc.text(doc.splitTextToSize(formatTreatmentText(report.treatment), 180), 14, 148);
+
+        const treatmentText = doc.splitTextToSize(formatTreatmentText(report.treatment), 180);
+        doc.text(treatmentText, 14, 148);
+
+        // Calculate the next Y position dynamically
+        let nextY = 148 + treatmentText.length * 7; // adjust line height if needed
 
         doc.setFontSize(14);
-        doc.text("Doctor's Note", 14, 180);
+        doc.text("Doctor's Note", 14, nextY);
         doc.setFontSize(12);
-        doc.text(doc.splitTextToSize(report.doctor_note || "N/A", 180), 14, 188);
+
+        const doctorNoteText = doc.splitTextToSize(report.doctor_note || "N/A", 180);
+        doc.text(doctorNoteText, 14, nextY + 8);
+
+        // Continue similarly for doctor's signature:
+        nextY = nextY + 8 + doctorNoteText.length * 7;
 
         doc.setFontSize(14);
-        doc.text("Doctor In Charge", 14, 220);
+        doc.text("Doctor In Charge", 14, nextY);
         doc.setFontSize(12);
-        doc.text(report.doctor_signature || "N/A", 14, 228);
+        doc.text(report.doctor_signature || "N/A", 14, nextY + 8);
 
         doc.save(`Report_${report.ic}.pdf`);
     };
 
     if (loading) return <div className="loading">Loading reports...</div>;
 
+    const indexOfLastReport = currentPage * reportsPerPage;
+    const indexOfFirstReport = indexOfLastReport - reportsPerPage;
+    const currentReports = filteredReports.slice(indexOfFirstReport, indexOfLastReport);
+
+    const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
+    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
     return (
-        <div className="report-container">
+        <div className="page-layout">
             <Sidebar />
-            <div className="main-content">
-                <h2>Patient's Cancer Diagnosis Reports</h2>
+            <div className="report-container">
+                <h2>Detailed Patient Reports</h2>
 
-                <input
-                    type="text"
-                    placeholder="Search by IC number..."
-                    value={searchIc}
-                    onChange={handleSearchChange}
-                    style={{
-                        marginBottom: "20px",
-                        padding: "8px",
-                        width: "250px",
-                        fontSize: "16px",
-                    }}
-                />
+                <div className="filters">
+                    <input
+                        type="text"
+                        placeholder="Search by IC number"
+                        value={searchIc}
+                        onChange={handleSearchChange}
+                    />
+                    <select value={selectedCancerType} onChange={handleCancerTypeChange}>
+                        <option value="All">All Cancer Types</option>
+                        <option value="Breast">Breast Cancer</option>
+                        <option value="Lung">Lung Cancer</option>
+                        <option value="Skin">Skin Cancer</option>
+                        <option value="Colorectal">Colorectal Cancer</option>
+                        <option value="Prostate">Prostate Cancer</option>
+                    </select>
 
-                <table className="report-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>IC</th>
-                            <th>Age</th>
-                            <th>Cancer Type</th>
-                            <th>Cancer Stage</th>
-                            <th>Diagnosis</th>
-                            <th>Survival</th>
-                            <th>Treatment</th>
-                            <th>Doctor's Note</th> {/* Added */}
-                            <th>Doctor In Charge</th> {/* Added */}
-                            <th>Created At</th>
-                            <th>Download</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredReports.length === 0 ? (
+                    <select value={selectedStage} onChange={handleStageChange}>
+                        <option value="All">All</option>
+                        <option value="0">Stage 0</option>
+                        <option value="1">Stage 1</option>
+                        <option value="2">Stage 2</option>
+                        <option value="3">Stage 3</option>
+                        <option value="4">Stage 4</option>
+                    </select>
+
+                </div>
+
+                {currentReports.length === 0 ? (
+                    <p>No matching reports found.</p>
+                ) : (
+                    <table className="report-table">
+                        <thead>
                             <tr>
-                                <td colSpan="12" style={{ textAlign: "center" }}>
-                                    No reports found.
-                                </td>
+                                <th>IC</th>
+                                <th>Age</th>
+                                <th>Cancer Type</th>
+                                <th>Diagnosis</th>
+                                <th>Survival</th>
+                                <th>Treatment</th>
+                                <th>Action</th>
                             </tr>
-                        ) : (
-                            filteredReports.map((report) => {
-                                let cancerStageDisplay = "No Cancer";
-                                try {
-                                    const diagObj = JSON.parse(report.diagnosis);
-                                    if (diagObj.cancerStage?.trim()) {
-                                        cancerStageDisplay = diagObj.cancerStage;
-                                    } else if (report.cancer_stage?.trim()) {
-                                        cancerStageDisplay = report.cancer_stage;
-                                    }
-                                } catch {
-                                    if (report.cancer_stage?.trim()) {
-                                        cancerStageDisplay = report.cancer_stage;
-                                    }
-                                }
+                        </thead>
+                        <tbody>
+                            {currentReports.map((report) => (
+                                <tr key={report.id}>
+                                    <td>{report.ic}</td>
+                                    <td>{report.age}</td>
+                                    <td>{report.cancer_type}</td>
+                                    <td>{formatDiagnosis(report.diagnosis)}</td>
+                                    <td>{formatSurvival(report.survival)}</td>
+                                    <td>
+                                        <pre>{formatTreatmentText(report.treatment)}</pre>
+                                    </td>
+                                    <td>
+                                        <button onClick={() => generatePDF(report)}>Download PDF</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
 
-                                return (
-                                    <tr key={report.id}>
-                                        <td>{report.id}</td>
-                                        <td>{report.ic}</td>
-                                        <td>{report.age}</td>
-                                        <td>{report.cancer_type}</td>
-                                        <td>{cancerStageDisplay}</td>
-                                        <td>{formatDiagnosis(report.diagnosis)}</td>
-                                        <td>{formatSurvival(report.survival)}</td>
-                                        <td><pre style={{ whiteSpace: "pre-wrap" }}>{formatTreatmentText(report.treatment)}</pre></td>
-
-                                        {/* New cells for doctor's note and signature */}
-                                        <td><pre style={{ whiteSpace: "pre-wrap" }}>{report.doctor_note || "N/A"}</pre></td>
-                                        <td>{report.doctor_signature || "N/A"}</td>
-
-                                        <td>{new Date(report.created_at).toLocaleString()}</td>
-                                        <td>
-                                            <button onClick={() => generatePDF(report)}>
-                                                Download PDF
-                                            </button>
-                                        </td>
-                                    </tr>
-                                );
-                            })
-                        )}
-                    </tbody>
-                </table>
+                <div className="pagination">
+                    {pageNumbers.map((number) => (
+                        <button
+                            key={number}
+                            className={currentPage === number ? "active" : ""}
+                            onClick={() => setCurrentPage(number)}
+                        >
+                            {number}
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
     );
-
 };
 
 export default DetailedReport;

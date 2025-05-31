@@ -82,3 +82,34 @@ input[type="radio"] {
   margin-right: 10px;
 }
 
+/* Layout wrapper for chart and scan side-by-side */
+.result-layout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  flex-wrap: wrap; /* Responsive on smaller screens */
+}
+
+/* Right-side scan preview box */
+.scan-preview {
+  flex: 1;
+  max-width: 500px;
+}
+
+.scan-preview h4 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.scan-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.scan-item img {
+  width: 180px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}

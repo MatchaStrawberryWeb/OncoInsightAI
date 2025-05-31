@@ -7,6 +7,7 @@ class PatientDetailedReport(Base):
     __tablename__ = "patient_reports"
 
     id = Column(Integer, primary_key=True, index=True)
+    full_name = Column(String(255), nullable=False)
     ic = Column(String(20), nullable=False)
     age = Column(Integer, nullable=False)
     cancer_type = Column(String(100), nullable=False)

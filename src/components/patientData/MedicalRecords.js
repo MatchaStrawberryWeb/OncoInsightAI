@@ -23,7 +23,8 @@ const MedicalRecords = () => {
     smoking: '',
     alcohol: '',
     diabetes: '',
-    high_blood_pressure: '',
+    systolic: '',
+    diastolic: '',
     heart_disease: '',
     asthma: '',
     medications: '',
@@ -249,8 +250,22 @@ const MedicalRecords = () => {
                     <input type="text" name="diabetes" value={formData.diabetes} onChange={handleChange} />
                   </div>
                   <div className="form-group">
-                    <label>High Blood Pressure</label>
-                    <input type="text" name="high_blood_pressure" value={formData.high_blood_pressure} onChange={handleChange} />
+                    <label>Blood Pressure - Systolic (mmHg)</label>
+                    <input
+                      type="text"
+                      name="systolic"
+                      value={formData.systolic}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Blood Pressure - Diastolic (mmHg)</label>
+                    <input
+                      type="text"
+                      name="diastolic"
+                      value={formData.diastolic}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="form-group">
                     <label>Heart Disease</label>

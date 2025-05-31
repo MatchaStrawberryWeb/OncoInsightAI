@@ -15,6 +15,7 @@ async def save_report(request: Request, db: Session = Depends(get_db)):
 
         report = PatientDetailedReport(
             ic=data.get("ic"),
+            full_name=data.get("full_name"),
             age=data.get("age"),
             cancer_type=data.get("cancerType"),
             cancer_stage=data.get("cancerStage"),

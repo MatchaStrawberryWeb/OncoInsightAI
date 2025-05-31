@@ -7,7 +7,7 @@ class DetailedReportResponse(BaseModel):
     ic: str
     age: int
     cancer_type: str
-    cancer_stage: Union[int, str]  # accept int or str
+    cancer_stage: Union[int, str] 
     diagnosis: str
     survival: str
     treatment: str

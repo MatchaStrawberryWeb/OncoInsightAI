@@ -43,7 +43,8 @@ async def create_patient_and_all_data(
     alcohol: str = Form(...),
 
     diabetes: str = Form(...),
-    high_blood_pressure: str = Form(...),
+    systolic: str = Form(...),
+    diastolic: str = Form(...),
     heart_disease: str = Form(""),
     asthma: str = Form(""),
     medications: str = Form(""),
@@ -91,7 +92,8 @@ async def create_patient_and_all_data(
         history = MedicalHistory(
             ic=ic,
             diabetes=diabetes,
-            high_blood_pressure=high_blood_pressure,
+            systolic = systolic,
+            diastolic = diastolic,
             heart_disease=heart_disease,  
             asthma=asthma,
             medications=medications,
@@ -256,7 +258,8 @@ async def update_patient(
 
     # Medical history
     diabetes: Optional[str] = Form(None),
-    high_blood_pressure: Optional[str] = Form(None),
+    systolic: Optional[str] = Form(None),
+    diastolic: Optional[str] = Form(None),
     heart_disease: Optional[str] = Form(None),
     asthma: Optional[str] = Form(None),
     medications: Optional[str] = Form(None),
@@ -314,7 +317,8 @@ async def update_patient(
         db.add(history)
 
     history.diabetes = diabetes
-    history.high_blood_pressure = high_blood_pressure
+    history.systolic = systolic
+    history.diastolic = diastolic
     history.heart_disease = heart_disease
     history.asthma = asthma
     history.medications = medications

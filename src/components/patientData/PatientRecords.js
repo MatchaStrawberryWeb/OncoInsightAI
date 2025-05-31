@@ -14,7 +14,8 @@ const PatientRecords = () => {
     weight: "",
     blood_type: "",
     diabetes: "",
-    high_blood_pressure: "",
+    systolic: "",
+    diastolic: "",
     heart_disease: "",
     asthma: "",
     allergies: "",
@@ -83,11 +84,17 @@ const PatientRecords = () => {
       else if (val > 125) diabetesLevel = "High";
     }
 
+
     let bpLevel = "Normal";
-    if (formData.high_blood_pressure) {
-      const val = parseFloat(formData.high_blood_pressure);
-      if (val < 90) bpLevel = "Low";
-      else if (val > 140) bpLevel = "High";
+    if (formData.systolic && formData.diastolic) {
+      const systolic = parseFloat(formData.systolic);
+      const diastolic = parseFloat(formData.diastolic);
+
+      if (systolic < 90 || diastolic < 60) {
+        bpLevel = "Low";
+      } else if (systolic > 140 || diastolic > 90) {
+        bpLevel = "High";
+      }
     }
 
     const form = new FormData();
@@ -98,7 +105,9 @@ const PatientRecords = () => {
     form.append("uploaded_file", selectedFile);
 
     form.append("diabetes", `${formData.diabetes} (${diabetesLevel})`);
-    form.append("high_blood_pressure", `${formData.high_blood_pressure} (${bpLevel})`);
+    form.append("systolic", formData.systolic);
+    form.append("diastolic", formData.diastolic);
+
 
     form.append("contact_name", formData.emergency_contact_name);
     form.append("contact_number", formData.emergency_contact_number);
@@ -109,7 +118,8 @@ const PatientRecords = () => {
     for (const [key, value] of Object.entries(formData)) {
       if (
         key !== "diabetes" &&
-        key !== "high_blood_pressure" &&
+        key !== "systolic" &&
+        key !== "diastolic" &&
         key !== "emergency_contact_name" &&
         key !== "emergency_contact_number" &&
         key !== "relationship_to_emergency_contacts"
@@ -141,7 +151,7 @@ const PatientRecords = () => {
           file_name: selectedFile?.name || "No file uploaded",
           ...formData,
           diabetes: `${formData.diabetes} (${diabetesLevel})`,
-          high_blood_pressure: `${formData.high_blood_pressure} (${bpLevel})`
+          blood_pressure: `${formData.systolic}/${formData.diastolic} (${bpLevel})`,
         });
         setSuccessMessage(data.message || "Patient data and file uploaded successfully!");
         setErrorMessage([]);  // clear previous error messages
@@ -279,13 +289,20 @@ const PatientRecords = () => {
             </div>
 
             <div className="form-group">
-              <label>High Blood Pressure (Systolic - mmHg):</label>
+              <label>Blood Pressure (mmHg):</label>
               <input
                 type="number"
-                name="high_blood_pressure"
-                value={formData.high_blood_pressure}
+                name="systolic"
+                value={formData.systolic}
                 onChange={handleChange}
-                placeholder="e.g. 120"
+                placeholder="Systolic e.g. 120"
+              />
+              <input
+                type="number"
+                name="diastolic"
+                value={formData.diastolic}
+                onChange={handleChange}
+                placeholder="Diastolic e.g. 80"
               />
             </div>
 
