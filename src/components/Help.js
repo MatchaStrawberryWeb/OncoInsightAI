@@ -8,36 +8,14 @@ const Help = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    const formData = {
-      subject,
-      message,
-    };
-
-    try {
-      const response = await fetch("http://127.0.0.1:8000/log-report", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccessMessage(data.message || "Report submitted successfully.");
-        setErrorMessage("");
-        setSubject("");
-        setMessage("");
-      } else {
-        setErrorMessage(data.detail || "Failed to submit the report.");
-        setSuccessMessage("");
-      }
-    } catch (error) {
-      setErrorMessage("An error occurred while submitting the report.");
-      setSuccessMessage("");
-    }
+    // Simulate successful submission without network call
+    setSuccessMessage("Report submitted successfully.");
+    setErrorMessage("");
+    setSubject("");
+    setMessage("");
   };
 
   const handleEmailAdmin = () => {

@@ -4,8 +4,8 @@ from datetime import datetime
 
 class UserActivityLogCreate(BaseModel):
     user_id: int
-    action: str
-    details: str | None = None
+    activity_type: str
+    details: Optional[str] = None
 
 class UserActivityLogRead(BaseModel):
     user_id: Optional[int]

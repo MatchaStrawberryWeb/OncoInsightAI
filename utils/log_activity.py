@@ -1,4 +1,4 @@
-from models import UserActivityLog
+from database_model import UserActivityLog
 from sqlalchemy.orm import Session
 
 def log_activity(db: Session, user_id: int, activity_type: str, details: str):

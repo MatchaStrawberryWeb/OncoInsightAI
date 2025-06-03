@@ -18,7 +18,8 @@ def create_user(db: Session, user_data):
         username=user_data.username,
         password_hash=hashed_password,
         full_name=user_data.full_name,
-        department=user_data.department
+        department=user_data.department,
+        email=user_data.email 
     )
     db.add(db_user)
     db.commit()
@@ -32,6 +33,7 @@ def update_user(db: Session, user_id: int, user_data):
         db_user.username = user_data.username
         db_user.full_name = user_data.full_name
         db_user.department = user_data.department
+        db_user.email = user_data.email  # ✅ added email
         if user_data.password:
             db_user.password_hash = pwd_context.hash(user_data.password)
         db.commit()
@@ -58,13 +60,12 @@ def log_activity(db: Session, user_id: int, action: str, details: str | None = N
 
     activity = UserActivityLog(
         user_id=user_id,
-        activity_type=action,
+        activity_type=action, 
         details=details,
         timestamp=datetime.utcnow()
     )
     db.add(activity)
     db.commit()
-
 
 
 def get_activity_logs(db: Session):

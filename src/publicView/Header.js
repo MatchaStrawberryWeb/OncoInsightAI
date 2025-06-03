@@ -1,13 +1,17 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faHandsHelping, faNewspaper, faInfoCircle, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
-import '../css/Header.css'; 
+import '../css/Header.css';
+import logo from '../assets/logo.png'; // adjust path as needed
 
 
 const Header = () => {
   return (
     <nav className="navbar">
-      <div className="logo">OncoInsight AI</div>
+      <div className="logo">
+        <img src={logo} alt="OncoInsight Logo" className="logo-img" />
+        <span className="logo-text">OncoInsight AI</span>
+      </div>
       <ul className="nav-links">
         <li>
           <a href="/">

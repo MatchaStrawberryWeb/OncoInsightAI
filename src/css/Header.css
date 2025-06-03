@@ -28,18 +28,37 @@
 
   /* Navbar Styling */
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #931f3a;
-    color: white;
-    padding: 10px 20px;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 98%;
+  z-index: 1000; /* Ensure it stays above other content */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #931f3a;
+  color: white;
+  padding: 10px 15px;
+  overflow: hidden;
+}
   
-  .navbar .logo {
-    font-size: 2rem;
-    font-weight: bold;
-  }
+ .logo {
+  display: flex;
+  align-items: center; 
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.logo-img {
+  height: 85px; 
+  width: auto;  
+  object-fit: contain;
+}
+
+
+.logo-text {
+  white-space: nowrap;
+}
   
   .nav-links {
     list-style: none;

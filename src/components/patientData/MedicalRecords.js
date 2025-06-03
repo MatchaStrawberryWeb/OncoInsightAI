@@ -119,6 +119,10 @@ const MedicalRecords = () => {
   };
 
   const handleDelete = async (ic) => {
+    const confirmed = window.confirm("Are you sure you want to delete this patient's data?");
+
+    if (!confirmed) return;
+
     try {
       await axios.delete(`http://127.0.0.1:8000/api/patients/${ic}`);
       setSuccessMessage('Patient data deleted successfully.');

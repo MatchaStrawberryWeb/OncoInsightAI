@@ -8,8 +8,9 @@ class UserActivityLog(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=False)
-    activity_type = Column(String(255), nullable=False)  # 'login', 'logout', etc.
+    activity_type = Column(String(255), nullable=False)
     timestamp = Column(TIMESTAMP, nullable=False, server_default=func.current_timestamp())
     details = Column(Text, nullable=True)
 
-    user = relationship("User")
+    user = relationship("User", back_populates="activity_logs")
+

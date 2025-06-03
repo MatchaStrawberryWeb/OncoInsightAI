@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../css/Sidebar.css';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import logo from '../assets/logo.png';
+import { Link } from 'react-router-dom';
 import {
     FaTachometerAlt,
     FaStethoscope,
@@ -86,15 +87,19 @@ const Sidebar = () => {
 
 
     return (
-        <>
-            {/* Sidebar Section */}
-            <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
-                <div className="top-section">
-                    <button className="toggle-btn" onClick={toggleSidebar}>
-                        <FaBars />
-                    </button>
-                    {!collapsed && <div className="logo-dashboard">OncoInsight AI</div>}
-                </div>
+        <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+            {/* Sidebar Header Section */}
+            <div className="top-section">
+                <button className="toggle-btn" onClick={toggleSidebar}>
+                    <FaBars />
+                </button>
+
+                {!collapsed && (
+                    <div className="logo-dashboard">
+                        <img src={logo} alt="OncoInsight Logo" className="logo-img" />
+                        <span className="logo-text">OncoInsight AI</span>
+                    </div>
+                )}
 
                 <ul className="menu">
                     <li>
@@ -161,16 +166,23 @@ const Sidebar = () => {
                     </li>
 
                 </ul>
-            </div>
+            </div >
 
             {/* Top-Right Links */}
-            <div className="top-right-links">
-                <div className="malaysia-time">{dateTime}</div>
+            < div className="top-right-links" >
+                <div className="malaysia-time" style={{ color: "black", fontWeight: "500" }}>
+                    {dateTime}
+                </div>
 
                 <Link
                     to="/help"
-                    onClick={e => !canAccess("help") && e.preventDefault()}
-                    style={{ pointerEvents: canAccess("help") ? "auto" : "none", color: canAccess("help") ? "inherit" : "gray" }}
+                    onClick={(e) => !canAccess("help") && e.preventDefault()}
+                    style={{
+                        pointerEvents: canAccess("help") ? "auto" : "none",
+                        color: canAccess("help") ? "black" : "gray",
+                        textDecoration: "none",
+                        fontWeight: "500"
+                    }}
                 >
                     <FaQuestionCircle className="menu-icon" /> Help
                 </Link>
@@ -178,12 +190,10 @@ const Sidebar = () => {
                 <button onClick={handleLogout} className="logout-button">
                     <FaSignOutAlt className="menu-icon" /> Logout
                 </button>
-            </div>
-
-
-
-        </>
+            </div >
+        </div >
     );
-};
+}
+
 
 export default Sidebar;

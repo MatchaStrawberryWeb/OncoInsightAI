@@ -1,6 +1,10 @@
 # api_routes/admin.py
 from datetime import datetime
+import logging
+import traceback
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -64,3 +68,26 @@ def create_activity_log(payload: UserActivityLogCreate, db: Session = Depends(ge
     db.commit()
     db.refresh(log)
     return {"message": "Activity logged successfully", "log_id": log.id}
+
+class DeactivateUserRequest(BaseModel):
+    user_id: int
+    email: EmailStr
+
+@router.post("/deactivate_user", status_code=200)
+async def deactivate_user(request: DeactivateUserRequest, db: Session = Depends(get_db)):
+    from database_model.user import User
+    user = db.query(User).filter(User.id == request.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    db.delete(user)
+    db.commit()
+
+    # Print "email" to console instead of sending
+    print("=== Simulated Email ===")
+    print("To:", request.email)
+    print("Subject: Your OncoInsight Account Has Been Deleted")
+    print("Body:\nDear user,\n\nYour OncoInsight account has been deleted by the administrator.\nIf this was unexpected, please contact support.\n\nBest regards,\nOncoInsight Admin")
+    print("=======================")
+
+    return {"message": "User deleted and email simulated"}
